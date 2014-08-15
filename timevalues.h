@@ -1,0 +1,48 @@
+//
+// timevalues.h
+//
+// Copyright (C) 2014 by Eric Dey. All rights reserved.
+//
+// Time transition values
+//
+
+#ifndef TIMEVALUES_H
+#define	TIMEVALUES_H
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+#define SECONDS_BETWEEN_SAMPLES     1.0
+
+/* ENABLE FOR PRODUCTION *** */
+#define COOL_ON_TO_COOL_OFF         15 * 60 / SECONDS_BETWEEN_SAMPLES
+#define COOL_OFF_TO_COOL_ON         20 * 60 / SECONDS_BETWEEN_SAMPLES
+#define COOL_OFF_TO_HEAT_ON         60 * 60 / SECONDS_BETWEEN_SAMPLES
+#define HEAT_ON_TO_HEAT_OFF         15 * 60 / SECONDS_BETWEEN_SAMPLES
+#define HEAT_OFF_TO_HEAT_ON         20 * 60 / SECONDS_BETWEEN_SAMPLES
+#define HEAT_OFF_TO_COOL_ON         60 * 60 / SECONDS_BETWEEN_SAMPLES
+#define FAN_BEFORE_COOL_ON          10 * 60 / SECONDS_BETWEEN_SAMPLES
+#define FAN_BEFORE_HEAT_ON          10 * 60 / SECONDS_BETWEEN_SAMPLES
+#define FAN_AFTER_COOL_OFF          10 * 60 / SECONDS_BETWEEN_SAMPLES
+#define FAN_AFTER_HEAT_OFF          10 * 60 / SECONDS_BETWEEN_SAMPLES
+
+/* REMOVE FOR PRODUCTION ***
+#define COOL_ON_TO_COOL_OFF         5 * SECONDS_BETWEEN_SAMPLES
+#define COOL_OFF_TO_COOL_ON         5 * SECONDS_BETWEEN_SAMPLES
+#define COOL_OFF_TO_HEAT_ON         10 * SECONDS_BETWEEN_SAMPLES
+#define HEAT_ON_TO_HEAT_OFF         5 * SECONDS_BETWEEN_SAMPLES
+#define HEAT_OFF_TO_HEAT_ON         5 * SECONDS_BETWEEN_SAMPLES
+#define HEAT_OFF_TO_COOL_ON         10 * SECONDS_BETWEEN_SAMPLES
+#define FAN_BEFORE_COOL_ON          5 * SECONDS_BETWEEN_SAMPLES
+#define FAN_BEFORE_HEAT_ON          5 * SECONDS_BETWEEN_SAMPLES
+#define FAN_AFTER_COOL_OFF          5 * SECONDS_BETWEEN_SAMPLES
+#define FAN_AFTER_HEAT_OFF          5 * SECONDS_BETWEEN_SAMPLES
+*/
+
+#ifdef	__cplusplus
+}
+#endif
+
+#endif
+

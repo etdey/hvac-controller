@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration device="PIC18F25K20" mcc_version="v2.0.1">
+    <managers>
+        <manager generated="true" name="Pin Manager" reloadPin="manual">
+            <setting name="package" option="PDIP28"/>
+            <setting name="sorting" option="true"/>
+            <resource customName="IO_RB0" digital="true" direction="OUTPUT" function="RB0" module="GPIO" name="RB0" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB1" digital="true" direction="OUTPUT" function="RB1" module="GPIO" name="RB1" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB2" digital="true" direction="OUTPUT" function="RB2" module="GPIO" name="RB2" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC5" digital="true" direction="INPUT" function="RC5" module="GPIO" name="RC5" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC6" digital="true" direction="INPUT" function="RC6" module="GPIO" name="RC6" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC7" digital="true" direction="INPUT" function="RC7" module="GPIO" name="RC7" start="false" type="pin" wpu="false"/>
+            <file checksum="1152811201" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="4081861733" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+        </manager>
+        <manager generated="true" name="System" reloadPin="manual">
+            <initializer comment="" name="Initialize">
+                <setting name="SCS" option="FOSC"/>
+                <setting name="IDLEN" option="disabled"/>
+                <setting name="IRCF" option="8MHz_HFINTOSC/2"/>
+                <setting name="INTSRC" option="disabled"/>
+                <setting name="PLLEN" option="disabled"/>
+                <setting name="TUN" option="0x00"/>
+                <additionalSetting name="pllMultiplier" option=""/>
+                <additionalSetting name="extclk" option="32.0 MHz"/>
+            </initializer>
+            <setting name="IESO" option="ON"/>
+            <setting name="FOSC" option="HS"/>
+            <setting name="FCMEN" option="ON"/>
+            <setting name="PWRT" option="OFF"/>
+            <setting name="BOREN" option="SBORDIS"/>
+            <setting name="BORV" option="18"/>
+            <setting name="WDTPS" option="1024"/>
+            <setting name="WDTEN" option="OFF"/>
+            <setting name="CCP2MX" option="PORTC"/>
+            <setting name="HFOFST" option="OFF"/>
+            <setting name="PBADEN" option="ON"/>
+            <setting name="LPT1OSC" option="ON"/>
+            <setting name="MCLRE" option="ON"/>
+            <setting name="LVP" option="ON"/>
+            <setting name="STVREN" option="ON"/>
+            <setting name="XINST" option="OFF"/>
+            <setting name="DEBUG" option="OFF"/>
+            <setting name="CP2" option="OFF"/>
+            <setting name="CP1" option="OFF"/>
+            <setting name="CP3" option="OFF"/>
+            <setting name="CP0" option="OFF"/>
+            <setting name="CPB" option="OFF"/>
+            <setting name="CPD" option="OFF"/>
+            <setting name="WRT0" option="OFF"/>
+            <setting name="WRT1" option="OFF"/>
+            <setting name="WRT2" option="OFF"/>
+            <setting name="WRT3" option="OFF"/>
+            <setting name="WRTC" option="OFF"/>
+            <setting name="WRTD" option="OFF"/>
+            <setting name="WRTB" option="OFF"/>
+            <setting name="EBTR3" option="OFF"/>
+            <setting name="EBTR1" option="OFF"/>
+            <setting name="EBTR2" option="OFF"/>
+            <setting name="EBTR0" option="OFF"/>
+            <setting name="EBTRB" option="OFF"/>
+            <setting name="generateConfigBits" option="true"/>
+            <file checksum="3650596137" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="545386361" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+        </manager>
+    </managers>
+    <modules>
+        <module generated="true" mode="GPIO" name="GPIO" order="0" reloadPin="manual" type="GPIO">
+            <resource customName="IO_RC5" digital="true" direction="INPUT" function="RC5" module="GPIO" name="RC5" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC6" digital="true" direction="INPUT" function="RC6" module="GPIO" name="RC6" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC7" digital="true" direction="INPUT" function="RC7" module="GPIO" name="RC7" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB0" digital="true" direction="OUTPUT" function="RB0" module="GPIO" name="RB0" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB2" digital="true" direction="OUTPUT" function="RB2" module="GPIO" name="RB2" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB1" digital="true" direction="OUTPUT" function="RB1" module="GPIO" name="RB1" start="false" type="pin" wpu="false"/>
+        </module>
+    </modules>
+</configuration>
