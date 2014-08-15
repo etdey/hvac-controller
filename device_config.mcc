@@ -60,8 +60,16 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="3650596137" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
-            <file checksum="545386361" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+            <file checksum="3707681831" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="277020744" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+        </manager>
+        <manager generated="true" name="Interrupt Manager" reloadPin="manual">
+            <setting name="preemptHigh" option="true"/>
+            <setting name="preemptLow" option="true"/>
+            <setting name="useIPEN" option="false"/>
+            <interrupt module="TMR0" name="TMRI" priority="2"/>
+            <file checksum="3050373586" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
+            <file checksum="3637066190" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
         </manager>
     </managers>
     <modules>
@@ -72,6 +80,26 @@
             <resource customName="IO_RB0" digital="true" direction="OUTPUT" function="RB0" module="GPIO" name="RB0" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB2" digital="true" direction="OUTPUT" function="RB2" module="GPIO" name="RB2" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB1" digital="true" direction="OUTPUT" function="RB1" module="GPIO" name="RB1" start="false" type="pin" wpu="false"/>
+        </module>
+        <module generated="true" mode="Timer" name="TMR0" order="1" reloadPin="manual" type="tmr_timer0">
+            <initializer comment="" name="Initialize">
+                <setting name="TMR0ON" option="enabled"/>
+                <setting name="T0SE" option="Increment_hi_lo"/>
+                <setting name="PSA" option="not_assigned"/>
+                <setting name="T0CS" option="FOSC/4"/>
+                <setting name="T08BIT" option="16-bit"/>
+                <setting name="T0PS" option="1:256"/>
+                <setting name="TMR0H" option="99"/>
+                <setting name="TMR0L" option="192"/>
+                <additionalSetting name="TMR0" option="25536"/>
+                <additionalSetting name="timerstart" option="enabled"/>
+                <additionalSetting name="extfreq" option="100 kHz"/>
+                <additionalSetting name="periodChanged" option="125.0ns"/>
+            </initializer>
+            <setting name="TMRI" option="true"/>
+            <setting name="ticker" option="20"/>
+            <file checksum="2149232699" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
+            <file checksum="1146512031" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
         </module>
     </modules>
 </configuration>

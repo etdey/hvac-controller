@@ -17,6 +17,13 @@
 
 
 //
+// Global variables for the module
+//
+volatile unsigned long uptimeSeconds = 0; // whole seconds since startup
+volatile unsigned long uptimeExtraMS = 0; // fractional milliseconds added to uptime
+
+
+//
 // Send the system state to the control board
 //
 int setSystemLines(ControlStateDescription state) {
@@ -71,7 +78,27 @@ ControlStateDescription evaluateState(ACControlLines *lines, ConditioningFunctio
 }
 
 
+//
+// Interrupt callback to update the internal time keeping. Called from
+// TMR0 ISR every 100ms.
+//
+void timerInterruptCallback() {
+    uptimeExtraMS += MSEC_BETWEEN_TIMER_CALLBACKS;
+    while (uptimeExtraMS >= 1000) {
+        uptimeExtraMS -= 1000;
+        uptimeSeconds++;
+    }
+}
+
+
+//
+// Update state timers based upon elapsed time measured by TMR0 ISR and
+// based upon the system's current state.
+//
 void updateTimers(ACControlTimers *timers, ControlStateDescription currentState) {
+    static unsigned long lastUptimeSeconds, lastUptimeExtraMS;
+    double elapsedTime;
+
     if (currentState == INITIAL) {
         timers->coolOff = 0;
         timers->coolOn = 0;
@@ -79,16 +106,26 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
         timers->fanOn = 0;
         timers->heatOff = 0;
         timers->heatOn = 0;
+        lastUptimeSeconds = uptimeSeconds;
+        lastUptimeExtraMS = uptimeExtraMS;
         return;
     }
 
+    // Compute elapsed time as a floating point value and update 'last' values.
+    // The 'last' values are updated here to minimize time lossage from the
+    // remaining processing in this function.
+    elapsedTime = (double)(uptimeSeconds-lastUptimeSeconds) + \
+            ((double)uptimeExtraMS / 1000) - (double)lastUptimeExtraMS / 1000;
+    lastUptimeSeconds = uptimeSeconds;
+    lastUptimeExtraMS = uptimeExtraMS;
+
     // Increment all counters and decide later which to clear
-    timers->coolOff += SECONDS_BETWEEN_SAMPLES;
-    timers->coolOn += SECONDS_BETWEEN_SAMPLES;
-    timers->fanOff += SECONDS_BETWEEN_SAMPLES;
-    timers->fanOn += SECONDS_BETWEEN_SAMPLES;
-    timers->heatOff += SECONDS_BETWEEN_SAMPLES;
-    timers->heatOn += SECONDS_BETWEEN_SAMPLES;
+    timers->coolOff += elapsedTime;
+    timers->coolOn += elapsedTime;
+    timers->fanOff += elapsedTime;
+    timers->fanOn += elapsedTime;
+    timers->heatOff += elapsedTime;
+    timers->heatOn += elapsedTime;
     
     // Clear counters to zero based on system state
     switch (currentState) {
@@ -150,8 +187,8 @@ void main(void) {
     SYSTEM_Initialize();
     //INTERRUPT_GlobalInterruptHighEnable();
     //INTERRUPT_GlobalInterruptLowEnable();
-    //INTERRUPT_GlobalInterruptEnable();
-    //INTERRUPT_PeripheralInterruptEnable();
+    INTERRUPT_GlobalInterruptEnable();
+    INTERRUPT_PeripheralInterruptEnable();
 
     // Initialize system state
     systemLines.fan = 0;

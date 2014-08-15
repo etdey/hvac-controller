@@ -109,6 +109,8 @@ void SYSTEM_Initialize(void)
 {
     OSCILLATOR_Initialize();
     PIN_MANAGER_Initialize();
+    INTERRUPT_Initialize();
+    TMR0_Initialize();
 }
 
 

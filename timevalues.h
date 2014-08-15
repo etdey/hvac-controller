@@ -13,32 +13,23 @@
 extern "C" {
 #endif
 
+// This must be less than the WDT or the MCU will reset.
 #define SECONDS_BETWEEN_SAMPLES     1.0
 
-/* ENABLE FOR PRODUCTION *** */
-#define COOL_ON_TO_COOL_OFF         15 * 60 / SECONDS_BETWEEN_SAMPLES
-#define COOL_OFF_TO_COOL_ON         20 * 60 / SECONDS_BETWEEN_SAMPLES
-#define COOL_OFF_TO_HEAT_ON         60 * 60 / SECONDS_BETWEEN_SAMPLES
-#define HEAT_ON_TO_HEAT_OFF         15 * 60 / SECONDS_BETWEEN_SAMPLES
-#define HEAT_OFF_TO_HEAT_ON         20 * 60 / SECONDS_BETWEEN_SAMPLES
-#define HEAT_OFF_TO_COOL_ON         60 * 60 / SECONDS_BETWEEN_SAMPLES
-#define FAN_BEFORE_COOL_ON          10 * 60 / SECONDS_BETWEEN_SAMPLES
-#define FAN_BEFORE_HEAT_ON          10 * 60 / SECONDS_BETWEEN_SAMPLES
-#define FAN_AFTER_COOL_OFF          10 * 60 / SECONDS_BETWEEN_SAMPLES
-#define FAN_AFTER_HEAT_OFF          10 * 60 / SECONDS_BETWEEN_SAMPLES
+// This is derived from the TMR0 period and callback rate.
+#define MSEC_BETWEEN_TIMER_CALLBACKS  100
 
-/* REMOVE FOR PRODUCTION ***
-#define COOL_ON_TO_COOL_OFF         5 * SECONDS_BETWEEN_SAMPLES
-#define COOL_OFF_TO_COOL_ON         5 * SECONDS_BETWEEN_SAMPLES
-#define COOL_OFF_TO_HEAT_ON         10 * SECONDS_BETWEEN_SAMPLES
-#define HEAT_ON_TO_HEAT_OFF         5 * SECONDS_BETWEEN_SAMPLES
-#define HEAT_OFF_TO_HEAT_ON         5 * SECONDS_BETWEEN_SAMPLES
-#define HEAT_OFF_TO_COOL_ON         10 * SECONDS_BETWEEN_SAMPLES
-#define FAN_BEFORE_COOL_ON          5 * SECONDS_BETWEEN_SAMPLES
-#define FAN_BEFORE_HEAT_ON          5 * SECONDS_BETWEEN_SAMPLES
-#define FAN_AFTER_COOL_OFF          5 * SECONDS_BETWEEN_SAMPLES
-#define FAN_AFTER_HEAT_OFF          5 * SECONDS_BETWEEN_SAMPLES
-*/
+// Minimum times required between state transitions. Values are in seconds.
+#define COOL_ON_TO_COOL_OFF         20 * 60
+#define COOL_OFF_TO_COOL_ON         20 * 60
+#define COOL_OFF_TO_HEAT_ON         60 * 60
+#define HEAT_ON_TO_HEAT_OFF         20 * 60
+#define HEAT_OFF_TO_HEAT_ON         20 * 60
+#define HEAT_OFF_TO_COOL_ON         60 * 60
+#define FAN_BEFORE_COOL_ON          10 * 60
+#define FAN_BEFORE_HEAT_ON          10 * 60
+#define FAN_AFTER_COOL_OFF          15 * 60
+#define FAN_AFTER_HEAT_OFF          15 * 60
 
 #ifdef	__cplusplus
 }
