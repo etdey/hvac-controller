@@ -43,8 +43,11 @@ ControlStateDescription trans_fan_on_to_cool_on(ACStateMachine fsm, ACControlTim
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != FAN_ON) return(ILLEGAL);
 
+    // Run the fan prior to turning on the cooling function.
     if (timers->fanOn < FAN_BEFORE_COOL_ON) return (FAN_ON);
 
+    // Unless there has not been a previous conditioning function, ensure that
+    // enough time has pasted since previous conditioning function.
     if (f->lastCondioningFunct != UNKNOWN) {
         if (timers->coolOff < COOL_OFF_TO_COOL_ON) return(FAN_ON);
         if (timers->heatOff < HEAT_OFF_TO_COOL_ON) return(FAN_ON);
@@ -59,8 +62,11 @@ ControlStateDescription trans_fan_on_to_heat_on(ACStateMachine fsm, ACControlTim
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != FAN_ON) return(ILLEGAL);
 
+    // Run the fan prior to turning on the heating function.
     if (timers->fanOn < FAN_BEFORE_HEAT_ON) return (FAN_ON);
 
+    // Unless there has not been a previous conditioning function, ensure that
+    // enough time has pasted since previous conditioning function.
     if (f->lastCondioningFunct != UNKNOWN) {
         if (timers->heatOff < HEAT_OFF_TO_HEAT_ON) return(FAN_ON);
         if (timers->coolOff < COOL_OFF_TO_HEAT_ON) return(FAN_ON);
@@ -75,6 +81,7 @@ ControlStateDescription trans_cool_on_to_cool_off_fan_on(ACStateMachine fsm, ACC
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != COOL_ON) return(ILLEGAL);
 
+    // Ensure that cooling has been on long enough before turning it off.
     if (timers->coolOn < COOL_ON_TO_COOL_OFF) return (COOL_ON);
 
     f->lastCondioningFunct = COOLING;
@@ -86,6 +93,8 @@ ControlStateDescription trans_cool_off_fan_on_to_all_off(ACStateMachine fsm, ACC
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != COOL_OFF_FAN_ON) return(ILLEGAL);
 
+    // Ensure that fan runs long enough after completion of cooling function.
+    // Once FAN_OFF state is entered, FAN_ON requires no minimum transition time.
     if (timers->coolOff < FAN_AFTER_COOL_OFF) return (COOL_OFF_FAN_ON);
 
     return(ALL_OFF);
@@ -95,6 +104,8 @@ ControlStateDescription trans_cool_off_fan_on_to_fan_on(ACStateMachine fsm, ACCo
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != COOL_OFF_FAN_ON) return(ILLEGAL);
 
+    // Ensure that fan runs long enough after completion of cooling function.
+    // Once FAN_ON state is entered, FAN_OFF requires no minimum transition time.
     if (timers->coolOff < FAN_AFTER_COOL_OFF) return (COOL_OFF_FAN_ON);
 
     return(FAN_ON);
@@ -104,6 +115,7 @@ ControlStateDescription trans_heat_on_to_heat_off_fan_on(ACStateMachine fsm, ACC
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != HEAT_ON) return(ILLEGAL);
 
+    // Ensure that heating has been on long enough before turning it off.
     if (timers->heatOn < HEAT_ON_TO_HEAT_OFF) return (HEAT_ON);
 
     f->lastCondioningFunct = HEATING;
@@ -115,6 +127,8 @@ ControlStateDescription trans_heat_off_fan_on_to_all_off(ACStateMachine fsm, ACC
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != HEAT_OFF_FAN_ON) return(ILLEGAL);
 
+    // Ensure that fan runs long enough after completion of heating function.
+    // Once FAN_OFF state is entered, FAN_ON requires no minimum transition time.
     if (timers->heatOff < FAN_AFTER_HEAT_OFF) return (HEAT_OFF_FAN_ON);
 
     return(ALL_OFF);
@@ -124,6 +138,8 @@ ControlStateDescription trans_heat_off_fan_on_to_fan_on(ACStateMachine fsm, ACCo
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != HEAT_OFF_FAN_ON) return(ILLEGAL);
 
+    // Ensure that fan runs long enough after completion of heating function.
+    // Once FAN_ON state is entered, FAN_OFF requires no minimum transition time.
     if (timers->heatOff < FAN_AFTER_HEAT_OFF) return (HEAT_OFF_FAN_ON);
 
     return(FAN_ON);
