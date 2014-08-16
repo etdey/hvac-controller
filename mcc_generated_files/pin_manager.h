@@ -254,20 +254,28 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define RC2_GetValue()         PORTCbits.RC2
 #define RC2_SetDigitalInput()    do { TRISC2 = 1; } while(0)
 #define RC2_SetDigitalOutput()   do { TRISC2 = 0; } while(0)
-// get/set RC3 procedures
-#define RC3_SetHigh()    do { LATC3 = 1; } while(0)
-#define RC3_SetLow()   do { LATC3 = 0; } while(0)
-#define RC3_Toggle()   do { LATC3 = ~LATC3; } while(0)
-#define RC3_GetValue()         PORTCbits.RC3
-#define RC3_SetDigitalInput()    do { TRISC3 = 1; } while(0)
-#define RC3_SetDigitalOutput()   do { TRISC3 = 0; } while(0)
-// get/set RC4 procedures
-#define RC4_SetHigh()    do { LATC4 = 1; } while(0)
-#define RC4_SetLow()   do { LATC4 = 0; } while(0)
-#define RC4_Toggle()   do { LATC4 = ~LATC4; } while(0)
-#define RC4_GetValue()         PORTCbits.RC4
-#define RC4_SetDigitalInput()    do { TRISC4 = 1; } while(0)
-#define RC4_SetDigitalOutput()   do { TRISC4 = 0; } while(0)
+// get/set SCL aliases
+#define SCL_TRIS               TRISC3
+#define SCL_LAT                LATC3
+#define SCL_PORT               PORTCbits.RC3
+#define SCL_SetHigh()    do { LATC3 = 1; } while(0)
+#define SCL_SetLow()   do { LATC3 = 0; } while(0)
+#define SCL_Toggle()   do { LATC3 = ~LATC3; } while(0)
+#define SCL_GetValue()         PORTCbits.RC3
+#define SCL_SetDigitalInput()    do { TRISC3 = 1; } while(0)
+#define SCL_SetDigitalOutput()   do { TRISC3 = 0; } while(0)
+
+// get/set SDA aliases
+#define SDA_TRIS               TRISC4
+#define SDA_LAT                LATC4
+#define SDA_PORT               PORTCbits.RC4
+#define SDA_SetHigh()    do { LATC4 = 1; } while(0)
+#define SDA_SetLow()   do { LATC4 = 0; } while(0)
+#define SDA_Toggle()   do { LATC4 = ~LATC4; } while(0)
+#define SDA_GetValue()         PORTCbits.RC4
+#define SDA_SetDigitalInput()    do { TRISC4 = 1; } while(0)
+#define SDA_SetDigitalOutput()   do { TRISC4 = 0; } while(0)
+
 // get/set IO_RC5 aliases
 #define IO_RC5_TRIS               TRISC5
 #define IO_RC5_LAT                LATC5

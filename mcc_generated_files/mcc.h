@@ -50,6 +50,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "pin_manager.h"
 #include "interrupt_manager.h"
 #include "tmr0.h"
+#include "i2c.h"
 
 #define _XTAL_FREQ  32000000
 

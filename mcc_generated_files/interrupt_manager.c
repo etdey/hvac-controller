@@ -58,6 +58,8 @@ void  INTERRUPT_Initialize (void)
 
     // TMRI
     INTCON2bits.TMR0IP = 0;
+    // SSPI
+    IPR1bits.SSPIP = 0;
 }
 
 void interrupt INTERRUPT_InterruptManager (void)
@@ -66,6 +68,10 @@ void interrupt INTERRUPT_InterruptManager (void)
     if(INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1)
     {
         TMR0_ISR();
+    }
+    else if(PIE1bits.SSPIE == 1 && PIR1bits.SSPIF == 1)
+    {
+        I2C_ISR();
     }
     else
     {

@@ -7,11 +7,13 @@
             <resource customName="IO_RB0" digital="true" direction="OUTPUT" function="RB0" module="GPIO" name="RB0" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB1" digital="true" direction="OUTPUT" function="RB1" module="GPIO" name="RB1" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB2" digital="true" direction="OUTPUT" function="RB2" module="GPIO" name="RB2" start="false" type="pin" wpu="false"/>
+            <resource customName="SCL" digital="true" direction="BIDIRECTIONAL" function="SCL" module="MSSP" name="RC3" start="true" type="pin" wpu="false"/>
+            <resource customName="SDA" digital="true" direction="BIDIRECTIONAL" function="SDA" module="MSSP" name="RC4" start="true" type="pin" wpu="false"/>
             <resource customName="IO_RC5" digital="true" direction="INPUT" function="RC5" module="GPIO" name="RC5" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RC6" digital="true" direction="INPUT" function="RC6" module="GPIO" name="RC6" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RC7" digital="true" direction="INPUT" function="RC7" module="GPIO" name="RC7" start="false" type="pin" wpu="false"/>
-            <file checksum="1152811201" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="4081861733" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="1218937034" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="740916077" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -60,16 +62,17 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="3707681831" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
-            <file checksum="277020744" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+            <file checksum="2363605612" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="2113733969" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">
             <setting name="preemptHigh" option="true"/>
             <setting name="preemptLow" option="true"/>
             <setting name="useIPEN" option="false"/>
-            <interrupt module="TMR0" name="TMRI" priority="2"/>
-            <file checksum="3050373586" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
+            <file checksum="3586596492" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
             <file checksum="3637066190" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
+            <interrupt module="TMR0" name="TMRI" priority="2"/>
+            <interrupt module="MSSP" name="SSPI" priority="2"/>
         </manager>
     </managers>
     <modules>
@@ -100,6 +103,41 @@
             <setting name="ticker" option="20"/>
             <file checksum="2149232699" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
             <file checksum="1146512031" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
+        </module>
+        <module generated="true" mode="I2C Slave Interrupt" name="MSSP" order="2" reloadPin="manual" type="mssp">
+            <initializer comment="" name="Initialize">
+                <setting name="BF" option="RCinprocess_TXcomplete"/>
+                <setting name="UA" option="dontupdate"/>
+                <setting name="SMP" option="Standard Speed"/>
+                <setting name="P" option="stopbit_notdetected"/>
+                <setting name="S" option="startbit_notdetected"/>
+                <setting name="R_nW" option="write_noTX"/>
+                <setting name="CKE" option="Idle to Active"/>
+                <setting name="D_nA" option="lastbyte_address"/>
+                <setting name="SSPEN" option="enabled"/>
+                <setting name="WCOL" option="no_collision"/>
+                <setting name="SSPOV" option="no_overflow"/>
+                <setting name="CKP" option="Idle:Low, Active:High"/>
+                <setting name="SSPM" option="7 Bit"/>
+                <setting name="ACKSTAT" option="received"/>
+                <setting name="RCEN" option="disabled"/>
+                <setting name="RSEN" option="disabled"/>
+                <setting name="ACKEN" option="disabled"/>
+                <setting name="ACKDT" option="acknowledge"/>
+                <setting name="SEN" option="disabled"/>
+                <setting name="GCEN" option="disabled"/>
+                <setting name="PEN" option="disabled"/>
+                <setting name="MSK0" option="0x0"/>
+                <setting name="SSPBUF" option="0x0"/>
+                <setting name="SSPADD" option="24"/>
+            </initializer>
+            <setting name="SSPM" option="7 Bit"/>
+            <setting name="slaveAddress" option="0x18"/>
+            <setting name="slaveAddressMask" option="0x7F"/>
+            <setting name="writeBuffer" option="8"/>
+            <setting name="readBuffer" option="8"/>
+            <file checksum="2336495778" modified="false" name="i2c.c" path="mcc_generated_files/i2c.c"/>
+            <file checksum="347135281" modified="false" name="i2c.h" path="mcc_generated_files/i2c.h"/>
         </module>
     </modules>
 </configuration>

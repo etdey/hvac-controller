@@ -19,8 +19,14 @@
 //
 // Global variables for the module
 //
-volatile unsigned long uptimeSeconds = 0; // whole seconds since startup
-volatile unsigned long uptimeExtraMS = 0; // fractional milliseconds added to uptime
+ACControlLines systemLines, thermostatLines;
+ControlStateDescription currentState, targetState;
+ConditioningFunction lastTemperatureFunction;
+ACControlTimers stateTimers;
+ACStateMachine fsm;
+
+unsigned long uptimeSeconds = 0; // whole seconds since startup
+unsigned long uptimeExtraMS = 0; // fractional milliseconds added to uptime
 
 
 //
@@ -176,12 +182,42 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
 }
 
 
+//
+// Handle I2C read requests. This is called from the I2C ISR.
+//
+uint8_t i2c_read(uint8_t dataAddress) {
+    uint8_t retVal = 0;
+
+    switch((I2CDataAddress)dataAddress) {
+        case SYSTEM_STATE:
+            retVal  = (systemLines.fan == 1) ? 1 : 0;
+            retVal += (systemLines.cool == 1) ? 2 : 0;
+            retVal += (systemLines.heat == 1) ? 4 : 0;
+            break;
+
+        case THERMOSTAT_STATE:
+            retVal  = (thermostatLines.fan == 1) ? 1 : 0;
+            retVal += (thermostatLines.cool == 1) ? 2 : 0;
+            retVal += (thermostatLines.heat == 1) ? 4 : 0;
+            break;
+
+        case CURRENT_STATE:
+            retVal = (uint8_t) currentState;
+            break;
+
+        case TARGET_STATE:
+            retVal = (uint8_t) targetState;
+            break;
+
+        case LAST_COND_FUNCTION:
+            retVal = (uint8_t) lastTemperatureFunction;
+    }
+
+    return(retVal);
+}
+
+
 void main(void) {
-    ACControlLines systemLines, thermostatLines;
-    ControlStateDescription currentState, targetState;
-    ConditioningFunction lastTemperatureFunction;
-    ACControlTimers stateTimers;
-    ACStateMachine fsm;
 
     // Initialize the PIC device
     SYSTEM_Initialize();

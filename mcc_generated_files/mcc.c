@@ -111,6 +111,7 @@ void SYSTEM_Initialize(void)
     PIN_MANAGER_Initialize();
     INTERRUPT_Initialize();
     TMR0_Initialize();
+    I2C_Initialize();
 }
 
 

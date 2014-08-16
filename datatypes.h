@@ -31,6 +31,16 @@ typedef struct {
 } ACControlTimers;
 
 
+typedef enum {
+    SYSTEM_STATE = 0,
+    THERMOSTAT_STATE = 1,
+    CURRENT_STATE = 2,
+    TARGET_STATE = 3,
+    LAST_COND_FUNCTION = 4,
+    DATA_ADDR_END = 5
+} I2CDataAddress;
+
+
 #ifdef	__cplusplus
 }
 #endif
