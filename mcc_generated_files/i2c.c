@@ -50,8 +50,8 @@ void I2C_Initialize(void)
     SSPCON1 = 0x26;
     // ACKSTAT received; RCEN disabled; RSEN disabled; ACKEN disabled; SEN disabled; ACKDT acknowledge; GCEN disabled; PEN disabled; 
     SSPCON2 = 0x00;
-    // MSK0 0x0; 
-    SSPMSK = (0x00 << 1);  // adjust UI mask for R/nW bit
+    // MSK0 127;
+    SSPMSK = (0x7F << 1);  // adjust UI mask for R/nW bit
     // SSPADD 24; 
     SSPADD = (0x18 << 1);  // adjust UI address for R/nW bit
 

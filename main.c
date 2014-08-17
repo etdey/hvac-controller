@@ -15,6 +15,9 @@
 #include "datatypes.h"
 #include "statemachine.h"
 
+// Firmware version values must be 0-255.
+#define FIRMWARE_VERSION_MAJOR      1
+#define FIRMWARE_VERSION_MINOR      4
 
 //
 // Global variables for the module
@@ -38,12 +41,18 @@ int setSystemLines(ControlStateDescription state) {
             SYSTEM_FAN = 1;
             SYSTEM_COOL = 1;
             SYSTEM_HEAT = 0;
+            systemLines.fan = 1;
+            systemLines.cool = 1;
+            systemLines.heat = 0;
             break;
 
         case HEAT_ON:
             SYSTEM_FAN = 1;
             SYSTEM_COOL = 0;
             SYSTEM_HEAT = 1;
+            systemLines.fan = 1;
+            systemLines.cool = 0;
+            systemLines.heat = 1;
             break;
 
         case COOL_OFF_FAN_ON:
@@ -52,12 +61,18 @@ int setSystemLines(ControlStateDescription state) {
             SYSTEM_FAN = 1;
             SYSTEM_COOL = 0;
             SYSTEM_HEAT = 0;
+            systemLines.fan = 1;
+            systemLines.cool = 0;
+            systemLines.heat = 0;
             break;
 
         case ALL_OFF:
             SYSTEM_FAN = 0;
             SYSTEM_COOL = 0;
             SYSTEM_HEAT = 0;
+            systemLines.fan = 0;
+            systemLines.cool = 0;
+            systemLines.heat = 0;
             break;
     }
 
@@ -117,11 +132,12 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
         return;
     }
 
-    // Compute elapsed time as a floating point value and update 'last' values.
-    // The 'last' values are updated here to minimize time lossage from the
-    // remaining processing in this function.
+    // Compute elapsed time as a floating point value.
     elapsedTime = (double)(uptimeSeconds-lastUptimeSeconds) + \
             ((double)uptimeExtraMS / 1000) - (double)lastUptimeExtraMS / 1000;
+
+    // Update 'last' values; they are updated here to minimuze time time
+    // lossage from the remaining processing in this function.
     lastUptimeSeconds = uptimeSeconds;
     lastUptimeExtraMS = uptimeExtraMS;
 
@@ -211,6 +227,27 @@ uint8_t i2c_read(uint8_t dataAddress) {
 
         case LAST_COND_FUNCTION:
             retVal = (uint8_t) lastTemperatureFunction;
+            break;
+
+        case UPTIME_SEC0:
+            retVal = (uint8_t) (uptimeSeconds & 0x000000ff);
+            break;
+
+        case UPTIME_SEC1:
+            retVal = (uint8_t) ((uptimeSeconds & 0x0000ff00) >> 8);
+            break;
+
+        case UPTIME_SEC2:
+            retVal = (uint8_t) ((uptimeSeconds & 0x00ff0000) >> 16);
+            break;
+
+        case FW_VER_MAJOR:
+            retVal = (uint8_t) FIRMWARE_VERSION_MAJOR;
+            break;
+
+        case FW_VER_MINOR:
+            retVal = (uint8_t) FIRMWARE_VERSION_MINOR;
+            break;
     }
 
     return(retVal);
@@ -218,6 +255,7 @@ uint8_t i2c_read(uint8_t dataAddress) {
 
 
 void main(void) {
+    ControlStateDescription newState;
 
     // Initialize the PIC device
     SYSTEM_Initialize();
@@ -265,20 +303,37 @@ void main(void) {
             continue;
         }
 
+        // Enforce maximum run times
+        if (currentState == targetState) {
+            switch (currentState) {
+                case COOL_ON:
+                    if (stateTimers.coolOn > MAX_COOL_ON) {
+                        targetState = COOL_OFF_FAN_ON;
+                    }
+                    break;
+
+                case HEAT_ON:
+                    if (stateTimers.heatOn > MAX_HEAT_ON) {
+                        targetState == HEAT_OFF_FAN_ON;
+                    }
+                    break;
+            }
+        }
+
+        // Evaluate state change from current to target state
         if (currentState != targetState) {
-            targetState = fsm_evaluate(fsm, currentState, targetState, &stateTimers);
+            newState = fsm_evaluate(fsm, currentState, targetState, &stateTimers);
 
             // If we reach an illegal state, reset the MCU
-            if (targetState == ILLEGAL) {
+            if (newState == ILLEGAL) {
                 RESET();
             }
 
             // If there is a new state, send it to the controller board
-            if (currentState != targetState) {
-                setSystemLines(targetState);
+            if (currentState != newState) {
+                setSystemLines(newState);
+                currentState = newState;
             }
-
-            currentState = targetState;
         }
 
         CLRWDT();

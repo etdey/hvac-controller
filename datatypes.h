@@ -37,7 +37,12 @@ typedef enum {
     CURRENT_STATE = 2,
     TARGET_STATE = 3,
     LAST_COND_FUNCTION = 4,
-    DATA_ADDR_END = 5
+    UPTIME_SEC0 = 5,
+    UPTIME_SEC1 = 6,
+    UPTIME_SEC2 = 7,
+    DATA_ADDR_END = 8,
+    FW_VER_MAJOR = 254,
+    FW_VER_MINOR = 255
 } I2CDataAddress;
 
 
