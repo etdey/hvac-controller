@@ -7,6 +7,7 @@
 //
 
 #include <limits.h>
+#include <xc.h>
 
 #include "mcc_generated_files/mcc.h"
 #include "sleep.h"
@@ -17,7 +18,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      1
-#define FIRMWARE_VERSION_MINOR      4
+#define FIRMWARE_VERSION_MINOR      5
 
 //
 // Global variables for the module
@@ -247,6 +248,10 @@ uint8_t i2c_read(uint8_t dataAddress) {
 
         case FW_VER_MINOR:
             retVal = (uint8_t) FIRMWARE_VERSION_MINOR;
+            break;
+
+        case REG_OSCCON:
+            retVal = (uint8_t) OSCCON;
             break;
     }
 
