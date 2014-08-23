@@ -168,6 +168,7 @@ if __name__ == '__main__':
     firstSample = True
     lastUptime = 0
     lastTimestamp = 0
+    nextTimestamp = 0
     while True:
         currTimestamp = time.time()
         uptime = ac.uptime()
@@ -185,7 +186,8 @@ if __name__ == '__main__':
         
         if firstSample is True:
             firstSample = False
-            time.sleep(SAMPLE_PERIOD_SEC_FIRST - (time.time()-currTimestamp))
+            nextTimestamp = currTimestamp + SAMPLE_PERIOD_SEC_FIRST
+            time.sleep(nextTimestamp - time.time())
             continue
         
         if sysfan is True:
@@ -256,4 +258,5 @@ if __name__ == '__main__':
         
         db.write_record([currTimestampMS, sysheatTime, syscoolTime, sysfanTime, tstatheatTime, tstatcoolTime, tstatfanTime, uptime])
         
-        time.sleep(SAMPLE_PERIOD_SEC - (time.time()-currTimestamp))
+        nextTimestamp += SAMPLE_PERIOD_SEC
+        time.sleep(nextTimestamp - time.time())
