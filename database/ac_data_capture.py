@@ -18,6 +18,9 @@ import influxdb
 SAMPLE_PERIOD_SEC = 60.0     # Time in seconds between samples
 SAMPLE_PERIOD_SEC_FIRST = 5.0
 
+MAX_TIMESAMPLES = 720
+TIMESAMPLE_PERIODS = [15, 60, 120, 240, 720]
+
 DBHOST = 'influxdb.tx.deys.org'
 DBPORT = 8086
 DBUSER = 'root'
@@ -165,13 +168,18 @@ if __name__ == '__main__':
     ac = ACController()
     db = DataStore()
     
+    timeSamples = []
+    
     firstSample = True
-    lastUptime = 0
     lastTimestamp = 0
     nextTimestamp = 0
     while True:
         currTimestamp = time.time()
         uptime = ac.uptime()
+        
+        timeSamples.insert(0, (currTimestamp, uptime))
+        if len(timeSamples) >= MAX_TIMESAMPLES:
+            del timeSamples[MAX_TIMESAMPLES:]
         
         currTimestampMS = int(currTimestamp * 1000)
         prettyTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
@@ -180,8 +188,6 @@ if __name__ == '__main__':
         (tstatfan, tstatcool, tstatheat) = ac.thermostat_state()
         
         deltaTimestamp = currTimestamp-lastTimestamp
-        deltaUptime = uptime-lastUptime
-        lastUptime = uptime
         lastTimestamp = currTimestamp
         
         if firstSample is True:
@@ -189,6 +195,17 @@ if __name__ == '__main__':
             nextTimestamp = currTimestamp + SAMPLE_PERIOD_SEC_FIRST
             time.sleep(nextTimestamp - time.time())
             continue
+        
+        # Compute controller clock differences over multiple windows
+        controllerClockDelta = []
+        for period in TIMESAMPLE_PERIODS:
+            if len(timeSamples) < period:
+                controllerClockDelta.append(999)
+            else:
+                (systemT0, controllerT0) = timeSamples[period - 1]
+                systemElapsedTime = currTimestamp - systemT0
+                controllerElapsedTime = uptime - controllerT0
+                controllerClockDelta.append(int(controllerElapsedTime - systemElapsedTime))
         
         if sysfan is True:
             sysfanTime = deltaTimestamp
@@ -220,12 +237,6 @@ if __name__ == '__main__':
         else:
             tstatheatTime = 0
         
-        """
-        print "%s uptime = %ss, elapsed time = %0.3fs, difference = %dms" % (prettyTime, uptime, deltaTimestamp,(deltaTimestamp-deltaUptime)*1000)
-        print "System     fan: +%0.2f, cool: +%0.2f, heat: +%0.2f" % (sysfanTime, syscoolTime, sysheatTime)
-        print "Thermostat fan: +%0.2f, cool: +%0.2f, heat: +%0.2f" % (tstatfanTime, tstatcoolTime, tstatheatTime)
-        """
-        
         sysmsg = ""
         if sysfan:
             sysmsg += "F"
@@ -254,7 +265,12 @@ if __name__ == '__main__':
         else:
             tstatmsg += " "
         
-        print "%s system:%s tstat:%s uptime:%ss clockdiff:%dms" % (prettyTime, sysmsg, tstatmsg, uptime, (deltaTimestamp-deltaUptime)*1000)
+        diffText = ""
+        for v in controllerClockDelta:
+            diffText += "%ds," % (v)
+        diffText = diffText.strip(",")
+        
+        print "%s s:%s t:%s up:%ss diff:%s" % (prettyTime, sysmsg, tstatmsg, uptime, diffText)
         
         db.write_record([currTimestampMS, sysheatTime, syscoolTime, sysfanTime, tstatheatTime, tstatcoolTime, tstatfanTime, uptime])
         
