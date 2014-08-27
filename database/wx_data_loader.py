@@ -11,7 +11,7 @@ This module reads data from the ADDS web site and uploads it to an InfluxDB serv
 
 """
 
-import datetime, time, urllib2, json
+import sys, datetime, time, json
 from xml.etree import ElementTree
 import influxdb
 
@@ -39,6 +39,7 @@ SKYCODE_COVERAGE_PERCENT = {
     "OVC" : 100.0,
     "OVX" : 100.0,
 }
+
 
 class WXServer(object):
 
@@ -148,7 +149,7 @@ class WXServer(object):
             metar = self._find_station_metar(station)
         
         return(metar.find("./observation_time").text[:-1])
-
+    
 
 
 class DataStore(object):
@@ -167,7 +168,7 @@ class DataStore(object):
         self.db = influxdb.client.InfluxDBClient(self.host, self.port, self.username, self.password, self.database)
     
     
-    def write_record(self, station, tempC, cloudcover, cloudtext, timestamp=None, series=DBSERIES, retries=DBRETRIES):
+    def write_record(self, station, tempC, cloudcover, timestamp=None, series=DBSERIES, retries=DBRETRIES):
         if timestamp is None:
             timestamp = int(time.time() * 1000)
         
@@ -175,8 +176,8 @@ class DataStore(object):
         
         rec = [{
             "name" : series,
-            "columns" : ["time", "tempC", "tempF", "cloudcover", "cloudtext", "station"],
-            "points" : [[timestamp, tempC, tempF, cloudcover, cloudtext, station]],
+            "columns" : ["time", "tempC", "tempF", "cloudcover", "station"],
+            "points" : [[timestamp, tempC, tempF, cloudcover, station]],
         }]
         
         while retries > 0:
@@ -191,10 +192,22 @@ class DataStore(object):
 
 if __name__ == '__main__':
     db = DataStore()
-    wx = WXServer(WX_STATIONS)
     
-    for station in WX_STATIONS:
-        tempC = wx.temperature(station)
-        cloudcover = wx.maxSkyCoverage(station)
-        cloudtext = wx.maxSkyCoverage(station, rawText=True)
-        db.write_record(station, tempC, cloudcover, cloudtext)
+    inputFileName = sys.argv[1]
+    wx = WXServer(WX_STATIONS, inputFileName)
+
+    metars = wx.xmlRoot.findall("./data/METAR")
+    if metars is None:
+        raise Exception("unable to locate METAR element in tree")
+    
+    for metar in metars:
+        station_id = metar.find("./station_id").text
+        temp_c = wx.temperature(station_id, metarElem=metar)
+        observation_time = wx.observationTime(station_id, metarElem=metar)
+        cloudcover = wx.maxSkyCoverage(station_id, metarElem=metar)
+        
+        # This makes the assumption time string is in GMT and local time is CDT
+        timestamp = int(datetime.datetime.strptime(observation_time, '%Y-%m-%dT%H:%M:%S').strftime("%s")) - (5*3600)
+        timestampMS = timestamp * 1000
+        print timestamp, station_id, temp_c, cloudcover
+        db.write_record(station_id, temp_c, cloudcover, timestampMS)
