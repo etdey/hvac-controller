@@ -18,23 +18,23 @@ extern "C" {
 
 // This is derived from the TMR0 period, callback rate, and corrected
 // for the observed oscillator error factor.
-// Oscillator error = 1.2184 (too slow < 1.0 > too fast)
-// 100ms / 1.2218 = 81.85ms  ~= 82ms
-#define MSEC_BETWEEN_TIMER_CALLBACKS  82
+// Oscillator error = 1.226271 (too slow < 1.0 > too fast)
+// 100ms / 1.226271 = 81.548042ms
+#define MSEC_BETWEEN_TIMER_CALLBACKS  81.548042
 
 // Times requirements for state transitions. Values are in seconds.
-#define COOL_ON_TO_COOL_OFF         30 * 60
-#define COOL_OFF_TO_COOL_ON         30 * 60
-#define COOL_OFF_TO_HEAT_ON         60 * 60
-#define HEAT_ON_TO_HEAT_OFF         20 * 60
-#define HEAT_OFF_TO_HEAT_ON         20 * 60
-#define HEAT_OFF_TO_COOL_ON         60 * 60
-#define FAN_BEFORE_COOL_ON          15 * 60
-#define FAN_BEFORE_HEAT_ON          15 * 60
-#define FAN_AFTER_COOL_OFF          10 * 60
-#define FAN_AFTER_HEAT_OFF          10 * 60
-#define MAX_COOL_ON                 120 * 60
-#define MAX_HEAT_ON                 180 * 60
+#define COOL_ON_TO_COOL_OFF         1800   /*  30 minutes */
+#define COOL_OFF_TO_COOL_ON         1800   /*  30 minutes */
+#define COOL_OFF_TO_HEAT_ON         3600   /*  60 minutes */
+#define HEAT_ON_TO_HEAT_OFF         1200   /*  20 minutes */
+#define HEAT_OFF_TO_HEAT_ON         1200   /*  20 mintues */
+#define HEAT_OFF_TO_COOL_ON         3600   /*  60 minutes */
+#define FAN_BEFORE_COOL_ON          900    /*  15 minutes */
+#define FAN_BEFORE_HEAT_ON          900    /*  15 minutes */
+#define FAN_AFTER_COOL_OFF          600    /*  10 minutes */
+#define FAN_AFTER_HEAT_OFF          600    /*  10 minutes */
+#define MAX_COOL_ON                 7200   /* 120 minutes */
+#define MAX_HEAT_ON                 10800  /* 180 minutes */
 
 #ifdef	__cplusplus
 }

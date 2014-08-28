@@ -18,7 +18,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      1
-#define FIRMWARE_VERSION_MINOR      5
+#define FIRMWARE_VERSION_MINOR      6
 
 //
 // Global variables for the module
@@ -30,7 +30,7 @@ ACControlTimers stateTimers;
 ACStateMachine fsm;
 
 unsigned long uptimeSeconds = 0; // whole seconds since startup
-unsigned long uptimeExtraMS = 0; // fractional milliseconds added to uptime
+double uptimeExtraMS = 0.0;      // milliseconds component of uptime
 
 
 //
@@ -106,8 +106,8 @@ ControlStateDescription evaluateState(ACControlLines *lines, ConditioningFunctio
 //
 void timerInterruptCallback() {
     uptimeExtraMS += MSEC_BETWEEN_TIMER_CALLBACKS;
-    while (uptimeExtraMS >= 1000) {
-        uptimeExtraMS -= 1000;
+    while (uptimeExtraMS >= 1000.0) {
+        uptimeExtraMS -= 1000.0;
         uptimeSeconds++;
     }
 }
@@ -118,8 +118,8 @@ void timerInterruptCallback() {
 // based upon the system's current state.
 //
 void updateTimers(ACControlTimers *timers, ControlStateDescription currentState) {
-    static unsigned long lastUptimeSeconds, lastUptimeExtraMS;
-    double elapsedTime;
+    static unsigned long lastUptimeSeconds;
+    static double lastUptimeExtraMS, elapsedTime;
 
     if (currentState == INITIAL) {
         timers->coolOff = 0;
@@ -134,8 +134,8 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
     }
 
     // Compute elapsed time as a floating point value.
-    elapsedTime = (double)(uptimeSeconds-lastUptimeSeconds) + \
-            ((double)uptimeExtraMS / 1000) - (double)lastUptimeExtraMS / 1000;
+    elapsedTime = (double)(uptimeSeconds - lastUptimeSeconds) + \
+            ((uptimeExtraMS - lastUptimeExtraMS) / 1000.0);
 
     // Update 'last' values; they are updated here to minimuze time time
     // lossage from the remaining processing in this function.
