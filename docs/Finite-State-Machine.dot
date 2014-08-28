@@ -1,0 +1,35 @@
+digraph G {
+    rankdir=TB;
+
+    init [label="initial" shape=Mdiamond];
+    coolOn [label="Cool ON" fillcolor="#8080ff" style=filled];
+    coolOffFanOn [label="Cool OFF\nFan ON" fillcolor="#ddddff" style=filled];
+    heatOn [label="Heat ON" fillcolor="#ff8080" style=filled];
+    heatOffFanOn [label="Heat OFF\nFan ON" fillcolor="#ffdddd" style=filled];
+    fanOn [label="Fan ON" fillcolor="#ddffdd" style=filled];
+    allOff [label="All OFF" fillcolor="#dddddd" style=filled];
+    
+    {rank=same; coolOn heatOn}
+    {rank=same; coolOffFanOn heatOffFanOn}
+
+    init -> coolOn [style=dashed w=2];
+    init -> heatOn [style=dashed w=2];
+    init -> fanOn [style=dashed];
+    init -> allOff [style=dashed];
+
+    allOff -> fanOn;
+    
+    fanOn -> allOff;
+    fanOn -> coolOn [label="Cool OFF to\nCool ON" w=5];
+    fanOn -> heatOn [label="Heat OFF to\nHeat ON" w=5];
+
+    coolOn -> coolOffFanOn [label="Cool ON to\nCool OFF" w=4];
+
+    heatOn -> heatOffFanOn [label="Heat ON to\nHeat OFF" w=4];
+
+    coolOffFanOn -> fanOn [label="Fan after\nCool OFF" w=3];
+    coolOffFanOn -> allOff [label="Fan after\nCool OFF"];
+
+    heatOffFanOn -> fanOn [label="Fan after\nHeat OFF" w=3];
+    heatOffFanOn -> allOff [label="Fan after\nHeat OFF"];
+}
