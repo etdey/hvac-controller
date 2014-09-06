@@ -11,7 +11,7 @@ This module reads data from the ADDS web site and uploads it to an InfluxDB serv
 
 """
 
-import datetime, time, urllib2, json
+import datetime, time, urllib2, json, math
 from xml.etree import ElementTree
 import influxdb
 
@@ -117,6 +117,18 @@ class WXServer(object):
         return(temp_c)
     
     
+    def dewpoint(self, station, farenheit=False, metarElem=None):
+        if metarElem is not None:
+            metar = metarElem
+        else:
+            metar = self._find_station_metar(station)
+        
+        dewpoint_c = float(metar.find("./dewpoint_c").text)
+        if farenheit is True:
+            return(dewpoint_c * 1.8 + 32)
+        return(dewpoint_c)
+    
+    
     def maxSkyCoverage(self, station, rawText=False, metarElem=None):
         if metarElem is not None:
             metar = metarElem
@@ -167,16 +179,19 @@ class DataStore(object):
         self.db = influxdb.client.InfluxDBClient(self.host, self.port, self.username, self.password, self.database)
     
     
-    def write_record(self, station, tempC, cloudcover, cloudtext, timestamp=None, series=DBSERIES, retries=DBRETRIES):
+    def write_record(self, station, tempC, dewpC, cloudcover, cloudtext, timestamp=None, series=DBSERIES, retries=DBRETRIES):
         if timestamp is None:
             timestamp = int(time.time() * 1000)
         
         tempF = tempC * 1.8 + 32
+        dewpF = dewpC * 1.8 + 32
+        
+        rh = int(100 * (math.exp((17.625*dewpC)/(243.04+dewpC))/math.exp((17.625*tempC)/(243.04+tempC))))
         
         rec = [{
             "name" : series,
-            "columns" : ["time", "tempC", "tempF", "cloudcover", "cloudtext", "station"],
-            "points" : [[timestamp, tempC, tempF, cloudcover, cloudtext, station]],
+            "columns" : ["time", "tempC", "tempF", "dewpC", "dewpF", "rh", "cloudcover", "cloudtext", "station"],
+            "points" : [[timestamp, tempC, tempF, dewpC, dewpF, rh, cloudcover, cloudtext, station]],
         }]
         
         while retries > 0:
@@ -195,6 +210,7 @@ if __name__ == '__main__':
     
     for station in WX_STATIONS:
         tempC = wx.temperature(station)
+        dewpC = wx.dewpoint(station)
         cloudcover = wx.maxSkyCoverage(station)
         cloudtext = wx.maxSkyCoverage(station, rawText=True)
-        db.write_record(station, tempC, cloudcover, cloudtext)
+        db.write_record(station, tempC, dewpC, cloudcover, cloudtext)
