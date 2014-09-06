@@ -15,8 +15,9 @@ import sys, datetime, time, json, smbus
 import influxdb
 
 
-SAMPLE_PERIOD_SEC = 60.0     # Time in seconds between samples
-SAMPLE_PERIOD_SEC_FIRST = 5.0
+SAMPLE_PERIOD_SEC = 60.0           # Time in seconds between samples
+SAMPLE_PERIOD_SEC_FIRST = 5.0      # On first sample
+SAMPLE_PERIOD_SEC_ONERROR = 10.0   # After an I2C I/O error
 
 MAX_TIMESAMPLES = 720
 TIMESAMPLE_PERIODS = [15, 60, 120, 240, 720]
@@ -129,12 +130,13 @@ class ACController(object):
 
 class DataStore(object):
     
-    def __init__(self, host=DBHOST, port=DBPORT, username=DBUSER, password=DBPASS, database=DBNAME):
+    def __init__(self, host=DBHOST, port=DBPORT, username=DBUSER, password=DBPASS, database=DBNAME, series=DBSERIES):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
         self.database = database
+        self.series = series
         
         self._newconnection()
     
@@ -143,11 +145,15 @@ class DataStore(object):
         self.db = influxdb.client.InfluxDBClient(self.host, self.port, self.username, self.password, self.database)
     
     
-    def write_record(self, points, series=DBSERIES, retries=DBRETRIES):
+    def write_record(self, points, series=None, retries=DBRETRIES):
         """write a set of point to database
         @points: a list of column data points
-        @series: name of data series
+        @series: name of data series; None uses class variable
         """
+        
+        if series is None:
+            series = self.series
+        
         rec = [{
             "name" : series,
             "columns" : ["time", "sysheat", "syscool", "sysfan", "tstatheat", "tstatcool", "tstatfan", "uptime"],
@@ -166,16 +172,17 @@ class DataStore(object):
 
 if __name__ == '__main__':
     
-    # I2C bus number and addresss passed as first two args
+    # I2C bus number and addresss and database series name passed as first three args
     try:
         busNumber = int(sys.argv[1])
         busAddress = int(sys.argv[2])
+        series = sys.argv[3]
     except:
-        print "Calling:  %s  <i2c_bus_#> <i2c_bus_addr>" % (sys.argv[0])
+        print "Calling:  %s  <i2c_bus_#> <i2c_bus_addr> <db_series>" % (sys.argv[0])
         sys.exit(1)
     
     ac = ACController(busNumber, busAddress)
-    db = DataStore()
+    db = DataStore(series=series)
     
     timeSamples = []
     
@@ -190,9 +197,10 @@ if __name__ == '__main__':
             (sysfan, syscool, sysheat) = ac.system_state()
             (tstatfan, tstatcool, tstatheat) = ac.thermostat_state()
         
-        except Exception, e:
-            print "Error reading from controller board: %s" % (e)
-            time.sleep(10)
+        except Exception:
+            print "%s: I/O error reading from controller board" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            nextTimestamp = currTimestamp + SAMPLE_PERIOD_SEC_ONERROR
+            time.sleep(nextTimestamp - time.time())
             continue
         
         timeSamples.insert(0, (currTimestamp, uptime))
@@ -200,7 +208,7 @@ if __name__ == '__main__':
             del timeSamples[MAX_TIMESAMPLES:]
         
         currTimestampMS = int(currTimestamp * 1000)
-        prettyTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
+        prettyTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         deltaTimestamp = currTimestamp-lastTimestamp
         lastTimestamp = currTimestamp
