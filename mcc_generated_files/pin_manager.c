@@ -59,7 +59,7 @@ void PIN_MANAGER_Initialize(void)
     LATC = 0x18;
     TRISC = 0xFF;
 
-    ANSEL = 0x1F;
+    ANSEL = 0x18;
 
     ANSELH = 0x0A;
 

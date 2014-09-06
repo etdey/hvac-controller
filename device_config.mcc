@@ -4,6 +4,9 @@
         <manager generated="true" name="Pin Manager" reloadPin="manual">
             <setting name="package" option="PDIP28"/>
             <setting name="sorting" option="true"/>
+            <resource customName="IO_RA0" digital="true" direction="INPUT" function="RA0" module="GPIO" name="RA0" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RA1" digital="true" direction="INPUT" function="RA1" module="GPIO" name="RA1" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RA2" digital="true" direction="INPUT" function="RA2" module="GPIO" name="RA2" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB0" digital="true" direction="OUTPUT" function="RB0" module="GPIO" name="RB0" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB1" digital="true" direction="OUTPUT" function="RB1" module="GPIO" name="RB1" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB2" digital="true" direction="OUTPUT" function="RB2" module="GPIO" name="RB2" start="false" type="pin" wpu="false"/>
@@ -12,8 +15,8 @@
             <resource customName="IO_RC5" digital="true" direction="INPUT" function="RC5" module="GPIO" name="RC5" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RC6" digital="true" direction="INPUT" function="RC6" module="GPIO" name="RC6" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RC7" digital="true" direction="INPUT" function="RC7" module="GPIO" name="RC7" start="false" type="pin" wpu="false"/>
-            <file checksum="1218937034" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="740916077" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="1150124220" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="165283931" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -83,6 +86,9 @@
             <resource customName="IO_RB0" digital="true" direction="OUTPUT" function="RB0" module="GPIO" name="RB0" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB2" digital="true" direction="OUTPUT" function="RB2" module="GPIO" name="RB2" start="false" type="pin" wpu="false"/>
             <resource customName="IO_RB1" digital="true" direction="OUTPUT" function="RB1" module="GPIO" name="RB1" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RA0" digital="true" direction="INPUT" function="RA0" module="GPIO" name="RA0" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RA1" digital="true" direction="INPUT" function="RA1" module="GPIO" name="RA1" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RA2" digital="true" direction="INPUT" function="RA2" module="GPIO" name="RA2" start="false" type="pin" wpu="false"/>
         </module>
         <module generated="true" mode="Timer" name="TMR0" order="1" reloadPin="manual" type="tmr_timer0">
             <initializer comment="" name="Initialize">

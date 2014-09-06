@@ -59,33 +59,48 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define PULL_UP_ENABLED      1
 #define PULL_UP_DISABLED     0
 
-// get/set RA0 procedures
-#define RA0_SetHigh()    do { LATA0 = 1; } while(0)
-#define RA0_SetLow()   do { LATA0 = 0; } while(0)
-#define RA0_Toggle()   do { LATA0 = ~LATA0; } while(0)
-#define RA0_GetValue()         PORTAbits.RA0
-#define RA0_SetDigitalInput()    do { TRISA0 = 1; } while(0)
-#define RA0_SetDigitalOutput()   do { TRISA0 = 0; } while(0)
-#define RA0_SetAnalogMode()   do { ANS0 = 1; } while(0)
-#define RA0_SetDigitalMode()   do { ANS0 = 0; } while(0)
-// get/set RA1 procedures
-#define RA1_SetHigh()    do { LATA1 = 1; } while(0)
-#define RA1_SetLow()   do { LATA1 = 0; } while(0)
-#define RA1_Toggle()   do { LATA1 = ~LATA1; } while(0)
-#define RA1_GetValue()         PORTAbits.RA1
-#define RA1_SetDigitalInput()    do { TRISA1 = 1; } while(0)
-#define RA1_SetDigitalOutput()   do { TRISA1 = 0; } while(0)
-#define RA1_SetAnalogMode()   do { ANS1 = 1; } while(0)
-#define RA1_SetDigitalMode()   do { ANS1 = 0; } while(0)
-// get/set RA2 procedures
-#define RA2_SetHigh()    do { LATA2 = 1; } while(0)
-#define RA2_SetLow()   do { LATA2 = 0; } while(0)
-#define RA2_Toggle()   do { LATA2 = ~LATA2; } while(0)
-#define RA2_GetValue()         PORTAbits.RA2
-#define RA2_SetDigitalInput()    do { TRISA2 = 1; } while(0)
-#define RA2_SetDigitalOutput()   do { TRISA2 = 0; } while(0)
-#define RA2_SetAnalogMode()   do { ANS2 = 1; } while(0)
-#define RA2_SetDigitalMode()   do { ANS2 = 0; } while(0)
+// get/set IO_RA0 aliases
+#define IO_RA0_TRIS               TRISA0
+#define IO_RA0_LAT                LATA0
+#define IO_RA0_PORT               PORTAbits.RA0
+#define IO_RA0_ANS                ANS0
+#define IO_RA0_SetHigh()    do { LATA0 = 1; } while(0)
+#define IO_RA0_SetLow()   do { LATA0 = 0; } while(0)
+#define IO_RA0_Toggle()   do { LATA0 = ~LATA0; } while(0)
+#define IO_RA0_GetValue()         PORTAbits.RA0
+#define IO_RA0_SetDigitalInput()    do { TRISA0 = 1; } while(0)
+#define IO_RA0_SetDigitalOutput()   do { TRISA0 = 0; } while(0)
+
+#define IO_RA0_SetAnalogMode()   do { ANS0 = 1; } while(0)
+#define IO_RA0_SetDigitalMode()   do { ANS0 = 0; } while(0)
+// get/set IO_RA1 aliases
+#define IO_RA1_TRIS               TRISA1
+#define IO_RA1_LAT                LATA1
+#define IO_RA1_PORT               PORTAbits.RA1
+#define IO_RA1_ANS                ANS1
+#define IO_RA1_SetHigh()    do { LATA1 = 1; } while(0)
+#define IO_RA1_SetLow()   do { LATA1 = 0; } while(0)
+#define IO_RA1_Toggle()   do { LATA1 = ~LATA1; } while(0)
+#define IO_RA1_GetValue()         PORTAbits.RA1
+#define IO_RA1_SetDigitalInput()    do { TRISA1 = 1; } while(0)
+#define IO_RA1_SetDigitalOutput()   do { TRISA1 = 0; } while(0)
+
+#define IO_RA1_SetAnalogMode()   do { ANS1 = 1; } while(0)
+#define IO_RA1_SetDigitalMode()   do { ANS1 = 0; } while(0)
+// get/set IO_RA2 aliases
+#define IO_RA2_TRIS               TRISA2
+#define IO_RA2_LAT                LATA2
+#define IO_RA2_PORT               PORTAbits.RA2
+#define IO_RA2_ANS                ANS2
+#define IO_RA2_SetHigh()    do { LATA2 = 1; } while(0)
+#define IO_RA2_SetLow()   do { LATA2 = 0; } while(0)
+#define IO_RA2_Toggle()   do { LATA2 = ~LATA2; } while(0)
+#define IO_RA2_GetValue()         PORTAbits.RA2
+#define IO_RA2_SetDigitalInput()    do { TRISA2 = 1; } while(0)
+#define IO_RA2_SetDigitalOutput()   do { TRISA2 = 0; } while(0)
+
+#define IO_RA2_SetAnalogMode()   do { ANS2 = 1; } while(0)
+#define IO_RA2_SetDigitalMode()   do { ANS2 = 0; } while(0)
 // get/set RA3 procedures
 #define RA3_SetHigh()    do { LATA3 = 1; } while(0)
 #define RA3_SetLow()   do { LATA3 = 0; } while(0)

@@ -16,9 +16,14 @@ extern "C" {
 #endif
 
 
+/*
 #define THERMOSTAT_FAN      PORTCbits.RC7
 #define THERMOSTAT_COOL     PORTCbits.RC6
 #define THERMOSTAT_HEAT     PORTCbits.RC5
+*/
+#define THERMOSTAT_FAN      PORTAbits.RA0
+#define THERMOSTAT_COOL     PORTAbits.RA1
+#define THERMOSTAT_HEAT     PORTAbits.RA2
 
 #define SYSTEM_FAN          LATBbits.LATB2
 #define SYSTEM_COOL         LATBbits.LATB1

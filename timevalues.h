@@ -18,9 +18,9 @@ extern "C" {
 
 // This is derived from the TMR0 period, callback rate, and corrected
 // for the observed oscillator error factor.
-// Oscillator error = 1.226271 (too slow < 1.0 > too fast)
-// 100ms / 1.226271 = 81.548042ms
-#define MSEC_BETWEEN_TIMER_CALLBACKS  81.548042
+// Oscillator error = 1.22299390 (too slow < 1.0 > too fast)
+// 100ms / 1.22299390 = 81.76655664ms
+#define MSEC_BETWEEN_TIMER_CALLBACKS  81.763742
 
 // Times requirements for state transitions. Values are in seconds.
 #define COOL_ON_TO_COOL_OFF         1800   /*  30 minutes */
