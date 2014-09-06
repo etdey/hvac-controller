@@ -11,7 +11,7 @@ This module reads data from I2C and uploads it to an InfluxDB server.
 
 """
 
-import datetime, time, json, smbus
+import sys, datetime, time, json, smbus
 import influxdb
 
 
@@ -58,7 +58,7 @@ I2CDataAddresses = {
 
 class ACController(object):
     
-    def __init__(self, busNumber=0, busAddress=0x18):
+    def __init__(self, busNumber, busAddress):
         self.busNumber = busNumber
         self.busAddress = busAddress
         
@@ -165,7 +165,16 @@ class DataStore(object):
 
 
 if __name__ == '__main__':
-    ac = ACController()
+    
+    # I2C bus number and addresss passed as first two args
+    try:
+        busNumber = int(sys.argv[1])
+        busAddress = int(sys.argv[2])
+    except:
+        print "Calling:  %s  <i2c_bus_#> <i2c_bus_addr>" % (sys.argv[0])
+        sys.exit(1)
+    
+    ac = ACController(busNumber, busAddress)
     db = DataStore()
     
     timeSamples = []
@@ -175,7 +184,16 @@ if __name__ == '__main__':
     nextTimestamp = 0
     while True:
         currTimestamp = time.time()
-        uptime = ac.uptime()
+        
+        try:
+            uptime = ac.uptime()
+            (sysfan, syscool, sysheat) = ac.system_state()
+            (tstatfan, tstatcool, tstatheat) = ac.thermostat_state()
+        
+        except Exception, e:
+            print "Error reading from controller board: %s" % (e)
+            time.sleep(10)
+            continue
         
         timeSamples.insert(0, (currTimestamp, uptime))
         if len(timeSamples) >= MAX_TIMESAMPLES:
@@ -183,9 +201,6 @@ if __name__ == '__main__':
         
         currTimestampMS = int(currTimestamp * 1000)
         prettyTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
-        
-        (sysfan, syscool, sysheat) = ac.system_state()
-        (tstatfan, tstatcool, tstatheat) = ac.thermostat_state()
         
         deltaTimestamp = currTimestamp-lastTimestamp
         lastTimestamp = currTimestamp
