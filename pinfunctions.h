@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 
-/*
+/* Input lines for version 1.x boards
 #define THERMOSTAT_FAN      PORTCbits.RC7
 #define THERMOSTAT_COOL     PORTCbits.RC6
 #define THERMOSTAT_HEAT     PORTCbits.RC5
@@ -29,6 +29,11 @@ extern "C" {
 #define SYSTEM_COOL         LATBbits.LATB1
 #define SYSTEM_HEAT         LATBbits.LATB0
 
+#define EUART_DTR           PORTCbits.RC5
+#define EUART_CTS           LATCbits.LATC2
+
+#define CIRCUIT_HEARTBEAT   LATAbits.LATA3
+#define CIRCUIT_STATUS      LATAbits.LATA4
 
 #ifdef	__cplusplus
 }

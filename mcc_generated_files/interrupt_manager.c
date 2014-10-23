@@ -60,6 +60,10 @@ void  INTERRUPT_Initialize (void)
     INTCON2bits.TMR0IP = 0;
     // SSPI
     IPR1bits.SSPIP = 0;
+    // RCI
+    IPR1bits.RCIP = 0;
+    // TXI
+    IPR1bits.TXIP = 0;
 }
 
 void interrupt INTERRUPT_InterruptManager (void)
@@ -72,6 +76,14 @@ void interrupt INTERRUPT_InterruptManager (void)
     else if(PIE1bits.SSPIE == 1 && PIR1bits.SSPIF == 1)
     {
         I2C_ISR();
+    }
+    else if(PIE1bits.RCIE == 1 && PIR1bits.RCIF == 1)
+    {
+        EUSART_Receive_ISR();
+    }
+    else if(PIE1bits.TXIE == 1 && PIR1bits.TXIF == 1)
+    {
+        EUSART_Transmit_ISR();
     }
     else
     {

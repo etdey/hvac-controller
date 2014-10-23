@@ -49,17 +49,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 void PIN_MANAGER_Initialize(void)
 {
-    LATA = 0x00;
-    TRISA = 0xFF;
+    LATA = 0x10;
+    TRISA = 0xE7;
 
     LATB = 0x00;
     TRISB = 0xF8;
     WPUB = 0x00;
 
-    LATC = 0x18;
-    TRISC = 0xFF;
+    LATC = 0x1C;
+    TRISC = 0xFB;
 
-    ANSEL = 0x18;
+    ANSEL = 0x10;
 
     ANSELH = 0x0A;
 

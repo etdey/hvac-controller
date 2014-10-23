@@ -41,7 +41,8 @@ typedef enum {
     UPTIME_SEC1 = 6,
     UPTIME_SEC2 = 7,
     REG_OSCCON = 8,
-    DATA_ADDR_END = 9,
+    IO_WD_SECONDS = 9,
+    DATA_ADDR_END = 10,
     FW_VER_MAJOR = 254,
     FW_VER_MINOR = 255
 } I2CDataAddress;

@@ -8,8 +8,9 @@
 #include "mcc.h"
 #include "../datatypes.h"
 
-// Prototype from main module
+// Prototypes from main module
 uint8_t i2c_read(uint8_t);
+uint8_t i2c_write(uint8_t, uint8_t);
 
 
 typedef enum
@@ -129,9 +130,8 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
                     break;
 
                 case SLAVE_NORMAL_DATA:
-                    // In the future, this can by used to put operational
-                    // values into the system. The data byte written by the
-                    // master is in I2C_slaveWriteData.
+                    // Process the data write request in the main module
+                    SSPBUF = i2c_write(dataAddress++, I2C_slaveWriteData);
                     break;
 
                 default:
@@ -143,6 +143,7 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
             break;
 
         case I2C_SLAVE_READ_REQUEST:
+            // Process the data read request in the main module
             SSPBUF = i2c_read(dataAddress++);
             if (dataAddress >= DATA_ADDR_END) dataAddress = 0;
             break;

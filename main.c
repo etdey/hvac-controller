@@ -32,6 +32,9 @@ ACStateMachine fsm;
 unsigned long uptimeSeconds = 0; // whole seconds since startup
 double uptimeExtraMS = 0.0;      // milliseconds component of uptime
 
+unsigned char ioWatchdogSeconds = 0; // number of seconds; zero to disable
+unsigned long ioWatchdogLastReset = 0; // timestamp of last I/O WD reset
+
 
 //
 // Send the system state to the control board
@@ -137,7 +140,7 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
     elapsedTime = (double)(uptimeSeconds - lastUptimeSeconds) + \
             ((uptimeExtraMS - lastUptimeExtraMS) / 1000.0);
 
-    // Update 'last' values; they are updated here to minimuze time time
+    // Update 'last' values; they are updated here to minimize time time
     // lossage from the remaining processing in this function.
     lastUptimeSeconds = uptimeSeconds;
     lastUptimeExtraMS = uptimeExtraMS;
@@ -196,6 +199,17 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
             timers->fanOn = 0;
             break;
     }
+
+    // I/O watchdog timer handling; if ioWatchdogSeconds is zero
+    // the timer is disabled.
+    if (ioWatchdogSeconds != 0) {
+        if ((uptimeSeconds - ioWatchdogLastReset) > ioWatchdogSeconds) {
+            // Ideally, the current state information would be saved now
+            // before doing a reset.
+            RESET();
+        }
+    }
+
 }
 
 
@@ -242,6 +256,9 @@ uint8_t i2c_read(uint8_t dataAddress) {
             retVal = (uint8_t) ((uptimeSeconds & 0x00ff0000) >> 16);
             break;
 
+        case IO_WD_SECONDS:
+            retVal = (uint8_t) ioWatchdogSeconds;
+
         case FW_VER_MAJOR:
             retVal = (uint8_t) FIRMWARE_VERSION_MAJOR;
             break;
@@ -252,6 +269,23 @@ uint8_t i2c_read(uint8_t dataAddress) {
 
         case REG_OSCCON:
             retVal = (uint8_t) OSCCON;
+            break;
+    }
+
+    return(retVal);
+}
+
+
+//
+// Handle I2C write requests. This is called from the I2C ISR.
+//
+uint8_t i2c_write(uint8_t dataAddress, uint8_t dataByte) {
+    uint8_t retVal = 0;
+
+    switch((I2CDataAddress)dataAddress) {
+        case IO_WD_SECONDS:
+            ioWatchdogSeconds = dataByte;
+            ioWatchdogLastReset = uptimeSeconds;
             break;
     }
 
@@ -283,6 +317,10 @@ void main(void) {
     while (1)     {
         CLRWDT();
         updateTimers(&stateTimers, currentState);
+
+        // Heartbeat light
+        CIRCUIT_HEARTBEAT = ~CIRCUIT_HEARTBEAT;
+        IO_RA4_Toggle();
 
         // Read requested control functions from thermostat
         thermostatLines.fan = (THERMOSTAT_FAN == 0) ? 0 : 1;

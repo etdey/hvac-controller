@@ -51,7 +51,8 @@ I2CDataAddresses = {
     "UPTIME_SEC1" : 6,
     "UPTIME_SEC2" : 7,
     "REG_OSCCON" : 8,
-    "DATA_ADDR_END" : 9,
+    "IO_WD_SECONDS" : 9,
+    "DATA_ADDR_END" : 10,
     "FW_VER_MAJOR" : 254,
     "FW_VER_MINOR" : 255
 }
@@ -77,6 +78,16 @@ class ACController(object):
         return(None)
     
     
+    def _write(self, regAddress, data, retries=3):
+        """write a single byte to i2c"""
+        while retries > 0:
+            try:
+                return(self.device.write_byte_data(self.busAddress, regAddress, data))
+            except:
+                retries -= 1
+        return(None)
+    
+    
     def firmware_version(self):
         value = "%s.%s" % (self._read(I2CDataAddresses['FW_VER_MAJOR']), self._read(I2CDataAddresses['FW_VER_MINOR']))
         return(value)
@@ -87,6 +98,13 @@ class ACController(object):
         value += (self._read(I2CDataAddresses['UPTIME_SEC1']) << 8)
         value += (self._read(I2CDataAddresses['UPTIME_SEC2']) << 16)
         return(value)
+    
+    
+    def reset_io_watchdog(self, secs=255):
+        if secs < 0 or secs > 255:
+            raise ValueError("number of seconds must be >= 0 and <= 255")
+        self._write(I2CDataAddresses['IO_WD_SECONDS'], secs)
+        return(0)
     
     
     def _line_state(self, thermostat=False):
@@ -196,6 +214,7 @@ if __name__ == '__main__':
             uptime = ac.uptime()
             (sysfan, syscool, sysheat) = ac.system_state()
             (tstatfan, tstatcool, tstatheat) = ac.thermostat_state()
+            ac.reset_io_watchdog()
         
         except Exception:
             print "%s: I/O error reading from controller board" % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

@@ -101,22 +101,31 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define IO_RA2_SetAnalogMode()   do { ANS2 = 1; } while(0)
 #define IO_RA2_SetDigitalMode()   do { ANS2 = 0; } while(0)
-// get/set RA3 procedures
-#define RA3_SetHigh()    do { LATA3 = 1; } while(0)
-#define RA3_SetLow()   do { LATA3 = 0; } while(0)
-#define RA3_Toggle()   do { LATA3 = ~LATA3; } while(0)
-#define RA3_GetValue()         PORTAbits.RA3
-#define RA3_SetDigitalInput()    do { TRISA3 = 1; } while(0)
-#define RA3_SetDigitalOutput()   do { TRISA3 = 0; } while(0)
-#define RA3_SetAnalogMode()   do { ANS3 = 1; } while(0)
-#define RA3_SetDigitalMode()   do { ANS3 = 0; } while(0)
-// get/set RA4 procedures
-#define RA4_SetHigh()    do { LATA4 = 1; } while(0)
-#define RA4_SetLow()   do { LATA4 = 0; } while(0)
-#define RA4_Toggle()   do { LATA4 = ~LATA4; } while(0)
-#define RA4_GetValue()         PORTAbits.RA4
-#define RA4_SetDigitalInput()    do { TRISA4 = 1; } while(0)
-#define RA4_SetDigitalOutput()   do { TRISA4 = 0; } while(0)
+// get/set IO_RA3 aliases
+#define IO_RA3_TRIS               TRISA3
+#define IO_RA3_LAT                LATA3
+#define IO_RA3_PORT               PORTAbits.RA3
+#define IO_RA3_ANS                ANS3
+#define IO_RA3_SetHigh()    do { LATA3 = 1; } while(0)
+#define IO_RA3_SetLow()   do { LATA3 = 0; } while(0)
+#define IO_RA3_Toggle()   do { LATA3 = ~LATA3; } while(0)
+#define IO_RA3_GetValue()         PORTAbits.RA3
+#define IO_RA3_SetDigitalInput()    do { TRISA3 = 1; } while(0)
+#define IO_RA3_SetDigitalOutput()   do { TRISA3 = 0; } while(0)
+
+#define IO_RA3_SetAnalogMode()   do { ANS3 = 1; } while(0)
+#define IO_RA3_SetDigitalMode()   do { ANS3 = 0; } while(0)
+// get/set IO_RA4 aliases
+#define IO_RA4_TRIS               TRISA4
+#define IO_RA4_LAT                LATA4
+#define IO_RA4_PORT               PORTAbits.RA4
+#define IO_RA4_SetHigh()    do { LATA4 = 1; } while(0)
+#define IO_RA4_SetLow()   do { LATA4 = 0; } while(0)
+#define IO_RA4_Toggle()   do { LATA4 = ~LATA4; } while(0)
+#define IO_RA4_GetValue()         PORTAbits.RA4
+#define IO_RA4_SetDigitalInput()    do { TRISA4 = 1; } while(0)
+#define IO_RA4_SetDigitalOutput()   do { TRISA4 = 0; } while(0)
+
 // get/set RA5 procedures
 #define RA5_SetHigh()    do { LATA5 = 1; } while(0)
 #define RA5_SetLow()   do { LATA5 = 0; } while(0)
@@ -262,13 +271,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define RC1_GetValue()         PORTCbits.RC1
 #define RC1_SetDigitalInput()    do { TRISC1 = 1; } while(0)
 #define RC1_SetDigitalOutput()   do { TRISC1 = 0; } while(0)
-// get/set RC2 procedures
-#define RC2_SetHigh()    do { LATC2 = 1; } while(0)
-#define RC2_SetLow()   do { LATC2 = 0; } while(0)
-#define RC2_Toggle()   do { LATC2 = ~LATC2; } while(0)
-#define RC2_GetValue()         PORTCbits.RC2
-#define RC2_SetDigitalInput()    do { TRISC2 = 1; } while(0)
-#define RC2_SetDigitalOutput()   do { TRISC2 = 0; } while(0)
+// get/set IO_RC2 aliases
+#define IO_RC2_TRIS               TRISC2
+#define IO_RC2_LAT                LATC2
+#define IO_RC2_PORT               PORTCbits.RC2
+#define IO_RC2_SetHigh()    do { LATC2 = 1; } while(0)
+#define IO_RC2_SetLow()   do { LATC2 = 0; } while(0)
+#define IO_RC2_Toggle()   do { LATC2 = ~LATC2; } while(0)
+#define IO_RC2_GetValue()         PORTCbits.RC2
+#define IO_RC2_SetDigitalInput()    do { TRISC2 = 1; } while(0)
+#define IO_RC2_SetDigitalOutput()   do { TRISC2 = 0; } while(0)
+
 // get/set SCL aliases
 #define SCL_TRIS               TRISC3
 #define SCL_LAT                LATC3
@@ -302,27 +315,27 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define IO_RC5_SetDigitalInput()    do { TRISC5 = 1; } while(0)
 #define IO_RC5_SetDigitalOutput()   do { TRISC5 = 0; } while(0)
 
-// get/set IO_RC6 aliases
-#define IO_RC6_TRIS               TRISC6
-#define IO_RC6_LAT                LATC6
-#define IO_RC6_PORT               PORTCbits.RC6
-#define IO_RC6_SetHigh()    do { LATC6 = 1; } while(0)
-#define IO_RC6_SetLow()   do { LATC6 = 0; } while(0)
-#define IO_RC6_Toggle()   do { LATC6 = ~LATC6; } while(0)
-#define IO_RC6_GetValue()         PORTCbits.RC6
-#define IO_RC6_SetDigitalInput()    do { TRISC6 = 1; } while(0)
-#define IO_RC6_SetDigitalOutput()   do { TRISC6 = 0; } while(0)
+// get/set TX aliases
+#define TX_TRIS               TRISC6
+#define TX_LAT                LATC6
+#define TX_PORT               PORTCbits.RC6
+#define TX_SetHigh()    do { LATC6 = 1; } while(0)
+#define TX_SetLow()   do { LATC6 = 0; } while(0)
+#define TX_Toggle()   do { LATC6 = ~LATC6; } while(0)
+#define TX_GetValue()         PORTCbits.RC6
+#define TX_SetDigitalInput()    do { TRISC6 = 1; } while(0)
+#define TX_SetDigitalOutput()   do { TRISC6 = 0; } while(0)
 
-// get/set IO_RC7 aliases
-#define IO_RC7_TRIS               TRISC7
-#define IO_RC7_LAT                LATC7
-#define IO_RC7_PORT               PORTCbits.RC7
-#define IO_RC7_SetHigh()    do { LATC7 = 1; } while(0)
-#define IO_RC7_SetLow()   do { LATC7 = 0; } while(0)
-#define IO_RC7_Toggle()   do { LATC7 = ~LATC7; } while(0)
-#define IO_RC7_GetValue()         PORTCbits.RC7
-#define IO_RC7_SetDigitalInput()    do { TRISC7 = 1; } while(0)
-#define IO_RC7_SetDigitalOutput()   do { TRISC7 = 0; } while(0)
+// get/set RX aliases
+#define RX_TRIS               TRISC7
+#define RX_LAT                LATC7
+#define RX_PORT               PORTCbits.RC7
+#define RX_SetHigh()    do { LATC7 = 1; } while(0)
+#define RX_SetLow()   do { LATC7 = 0; } while(0)
+#define RX_Toggle()   do { LATC7 = ~LATC7; } while(0)
+#define RX_GetValue()         PORTCbits.RC7
+#define RX_SetDigitalInput()    do { TRISC7 = 1; } while(0)
+#define RX_SetDigitalOutput()   do { TRISC7 = 0; } while(0)
 
 // get/set MCLR aliases
 #define MCLR_PORT               PORTEbits.RE3

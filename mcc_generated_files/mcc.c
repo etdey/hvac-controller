@@ -112,6 +112,7 @@ void SYSTEM_Initialize(void)
     INTERRUPT_Initialize();
     TMR0_Initialize();
     I2C_Initialize();
+    EUSART_Initialize();
 }
 
 
