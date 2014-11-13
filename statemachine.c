@@ -30,12 +30,20 @@ struct  ACStateMachine_struct {
 ControlStateDescription trans_all_off_to_fan_on(ACStateMachine fsm, ACControlTimers *timers) {
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != ALL_OFF) return(ILLEGAL);
+
+    // Ensure that enough time has passed since fan was last on.
+    if (timers->fanOff < FAN_OFF_TO_FAN_ON) return (ALL_OFF);
+
     return(FAN_ON);
 }
 
 ControlStateDescription trans_fan_on_to_all_off(ACStateMachine fsm, ACControlTimers *timers) {
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != FAN_ON) return(ILLEGAL);
+
+    // Ensure that fan has been on long enough before turning it off
+    if (timers->fanOn < FAN_ON_TO_FAN_OFF) return(FAN_ON);
+
     return(ALL_OFF);
 }
 
@@ -43,8 +51,11 @@ ControlStateDescription trans_fan_on_to_cool_on(ACStateMachine fsm, ACControlTim
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != FAN_ON) return(ILLEGAL);
 
-    // Run the fan prior to turning on the cooling function.
-    if (timers->fanOn < FAN_BEFORE_COOL_ON) return (FAN_ON);
+    // Run the fan prior to turning on the cooling function unless sufficient
+    // time has past since last cooling use. But, system cannot go to instant
+    // cooling without checking time since heating was last on.
+    if (timers->coolOff < MIN_COOL_OFF_TO_INSTANT_ON &&
+            timers->fanOn < FAN_BEFORE_COOL_ON) return (FAN_ON);
 
     // Unless there has not been a previous conditioning function, ensure that
     // enough time has pasted since previous conditioning function.
@@ -62,8 +73,11 @@ ControlStateDescription trans_fan_on_to_heat_on(ACStateMachine fsm, ACControlTim
     struct ACStateMachine_struct *f = fsm;
     if (f->currentState != FAN_ON) return(ILLEGAL);
 
-    // Run the fan prior to turning on the heating function.
-    if (timers->fanOn < FAN_BEFORE_HEAT_ON) return (FAN_ON);
+    // Run the fan prior to turning on the heating function unless sufficient
+    // time has past since last heating use. But, system cannot go to instant
+    // heating without checking time since cooling was last on.
+    if (timers->heatOff < MIN_HEAT_OFF_TO_INSTANT_ON &&
+            timers->fanOn < FAN_BEFORE_HEAT_ON) return (FAN_ON);
 
     // Unless there has not been a previous conditioning function, ensure that
     // enough time has pasted since previous conditioning function.

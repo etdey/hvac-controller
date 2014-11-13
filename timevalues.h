@@ -27,21 +27,26 @@ extern "C" {
 // Computing adjustment to prior value:
 // (1 - ({ErrorSeconds}/{ElapsedSeconds})) * {PreviousValue}
 //
-#define MSEC_BETWEEN_TIMER_CALLBACKS  81.76752686
+#define MSEC_BETWEEN_TIMER_CALLBACKS  81.76627826
 
 // Times requirements for state transitions. Values are in seconds.
 #define COOL_ON_TO_COOL_OFF         1200   /*  20 minutes */
 #define COOL_OFF_TO_COOL_ON         1800   /*  30 minutes */
 #define COOL_OFF_TO_HEAT_ON         3600   /*  60 minutes */
-#define HEAT_ON_TO_HEAT_OFF         1200   /*  20 minutes */
+#define HEAT_ON_TO_HEAT_OFF         1800   /*  30 minutes */
 #define HEAT_OFF_TO_HEAT_ON         1200   /*  20 mintues */
 #define HEAT_OFF_TO_COOL_ON         3600   /*  60 minutes */
 #define FAN_BEFORE_COOL_ON          900    /*  15 minutes */
 #define FAN_BEFORE_HEAT_ON          900    /*  15 minutes */
-#define FAN_AFTER_COOL_OFF          420    /*   7 minutes */
-#define FAN_AFTER_HEAT_OFF          420    /*   7 minutes */
+#define FAN_AFTER_COOL_OFF          300    /*   5 minutes */
+#define FAN_AFTER_HEAT_OFF          300    /*   5 minutes */
+#define FAN_ON_TO_FAN_OFF           900    /*  15 minutes */
+#define FAN_OFF_TO_FAN_ON           300    /*   5 minutes */
 #define MAX_COOL_ON                 7200   /* 120 minutes */
 #define MAX_HEAT_ON                 10800  /* 180 minutes */
+#define MAX_ALL_OFF_TO_FAN_ON       14400  /*   4 hours */
+#define MIN_COOL_OFF_TO_INSTANT_ON  86400  /*  24 hours */
+#define MIN_HEAT_OFF_TO_INSTANT_ON  43200  /*  12 hours */
 
 #ifdef	__cplusplus
 }

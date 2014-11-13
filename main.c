@@ -18,7 +18,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      1
-#define FIRMWARE_VERSION_MINOR      6
+#define FIRMWARE_VERSION_MINOR      7
 
 //
 // Global variables for the module
@@ -346,7 +346,7 @@ void main(void) {
             continue;
         }
 
-        // Enforce maximum run times
+        // Enforce maximum run times and maximum all-off time
         if (currentState == targetState) {
             switch (currentState) {
                 case COOL_ON:
@@ -360,6 +360,11 @@ void main(void) {
                         targetState == HEAT_OFF_FAN_ON;
                     }
                     break;
+
+                case ALL_OFF:
+                    if (stateTimers.fanOff > MAX_ALL_OFF_TO_FAN_ON) {
+                        targetState == FAN_ON;
+                    }
             }
         }
 
