@@ -9,6 +9,8 @@
 #ifndef DATATYPES_H
 #define	DATATYPES_H
 
+#include <stdint.h>
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -21,13 +23,23 @@ typedef struct {
 } ACControlLines;
 
 
+//
+// Structure for tracking number of seconds since control state became true
+// and the time stamp (uptime value) when that occurred.
+//
 typedef struct {
-    double fanOn;
-    double fanOff;
-    double coolOn;
-    double coolOff;
-    double heatOn;
-    double heatOff;
+    unsigned long fanOn;
+    unsigned long fanOff;
+    unsigned long coolOn;
+    unsigned long coolOff;
+    unsigned long heatOn;
+    unsigned long heatOff;
+    unsigned long fanOn_repInterval;
+    unsigned long fanOff_repInterval;
+    unsigned long coolOn_repInterval;
+    unsigned long coolOff_repInterval;
+    unsigned long heatOn_repInterval;
+    unsigned long heatOff_repInterval;
 } ACControlTimers;
 
 
@@ -46,6 +58,36 @@ typedef enum {
     FW_VER_MAJOR = 254,
     FW_VER_MINOR = 255
 } I2CDataAddress;
+
+
+//
+// Status package structure:
+// XBee data payload structure (RF Data for frame type 0x10)
+//
+typedef struct {
+    uint8_t packetType;
+    uint8_t versionMajor;
+    uint8_t versionMinor;
+    uint8_t sequenceNumber;
+    unsigned long uptime;
+    uint8_t systemState;
+    uint8_t thermostatState;
+    uint8_t currentState;
+    uint8_t targetState;
+    unsigned long timer_fanOn;
+    unsigned long timer_fanOff;
+    unsigned long timer_coolOn;
+    unsigned long timer_coolOff;
+    unsigned long timer_heatOn;
+    unsigned long timer_heatOff;
+    unsigned long accum_fanOn;
+    unsigned long accum_fanOff;
+    unsigned long accum_coolOn;
+    unsigned long accum_coolOff;
+    unsigned long accum_heatOn;
+    unsigned long accum_heatOff;
+    char nodeName[21];
+} XBeeStatusPayload;
 
 
 #ifdef	__cplusplus

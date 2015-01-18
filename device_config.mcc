@@ -184,10 +184,10 @@
             </initializer>
             <setting name="RCI" option="true"/>
             <setting name="TXI" option="true"/>
-            <setting name="inputBuffer" option="32"/>
-            <setting name="outputBuffer" option="32"/>
+            <setting name="inputBuffer" option="64"/>
+            <setting name="outputBuffer" option="64"/>
             <setting name="stdio" option="false"/>
-            <file checksum="3798852563" modified="false" name="eusart.c" path="mcc_generated_files/eusart.c"/>
+            <file checksum="1578165213" modified="false" name="eusart.c" path="mcc_generated_files/eusart.c"/>
             <file checksum="2232998645" modified="false" name="eusart.h" path="mcc_generated_files/eusart.h"/>
         </module>
     </modules>

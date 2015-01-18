@@ -8,6 +8,7 @@
 
 #include <limits.h>
 #include <xc.h>
+#include <string.h>
 
 #include "mcc_generated_files/mcc.h"
 #include "sleep.h"
@@ -15,10 +16,19 @@
 #include "pinfunctions.h"
 #include "datatypes.h"
 #include "statemachine.h"
+#include "XBeeAPIPackets.h"
 
 // Firmware version values must be 0-255.
-#define FIRMWARE_VERSION_MAJOR      1
-#define FIRMWARE_VERSION_MINOR      7
+#define FIRMWARE_VERSION_MAJOR      3
+#define FIRMWARE_VERSION_MINOR      0
+
+// XBee Configuration
+#define XBEE_DEST_MAC_HI            0x0013A200
+#define XBEE_DEST_MAC_LO            0x40AF5B5D
+#define XBEE_NI_MAXLEN              20
+#define XBEE_COMMAND_MAXLEN         250
+#define XBEE_RESPONSE_MAXLEN        250
+#define XBEE_REPORT_INTERVAL_SEC    60
 
 //
 // Global variables for the module
@@ -29,12 +39,16 @@ ConditioningFunction lastTemperatureFunction;
 ACControlTimers stateTimers;
 ACStateMachine fsm;
 
-unsigned long uptimeSeconds = 0; // whole seconds since startup
-double uptimeExtraMS = 0.0;      // milliseconds component of uptime
+volatile unsigned long uptimeSeconds = 0; // whole seconds since startup
+volatile double uptimeExtraMS = 0.0;      // milliseconds component of uptime
 
 unsigned char ioWatchdogSeconds = 0; // number of seconds; zero to disable
 unsigned long ioWatchdogLastReset = 0; // timestamp of last I/O WD reset
 
+char xbee_command_str[XBEE_COMMAND_MAXLEN+1];
+char xbee_response_str[XBEE_COMMAND_MAXLEN+1];
+XBeeStatusPayload xbee_status;
+unsigned long xbee_nextReportTime;
 
 //
 // Send the system state to the control board
@@ -112,6 +126,7 @@ void timerInterruptCallback() {
     while (uptimeExtraMS >= 1000.0) {
         uptimeExtraMS -= 1000.0;
         uptimeSeconds++;
+        IO_RA4_Toggle();
     }
 }
 
@@ -122,88 +137,146 @@ void timerInterruptCallback() {
 //
 void updateTimers(ACControlTimers *timers, ControlStateDescription currentState) {
     static unsigned long lastUptimeSeconds;
-    static double lastUptimeExtraMS, elapsedTime;
+    unsigned long currUptimeSeconds, elapsedTime;
+
+    currUptimeSeconds = uptimeSeconds; // Capture this now in case it updates
 
     if (currentState == INITIAL) {
-        timers->coolOff = 0;
-        timers->coolOn = 0;
-        timers->fanOff = 0;
+        lastUptimeSeconds = currUptimeSeconds;
+
+        // Reset the total time counters for each state
         timers->fanOn = 0;
-        timers->heatOff = 0;
+        timers->fanOff = 0;
+        timers->coolOn = 0;
+        timers->coolOff = 0;
         timers->heatOn = 0;
-        lastUptimeSeconds = uptimeSeconds;
-        lastUptimeExtraMS = uptimeExtraMS;
+        timers->heatOff = 0;
+
+        // Set the initial time counters for reporting interval
+        timers->fanOn_repInterval = 0;
+        timers->fanOff_repInterval = 0;
+        timers->coolOn_repInterval = 0;
+        timers->coolOff_repInterval = 0;
+        timers->heatOn_repInterval = 0;
+        timers->heatOff_repInterval = 0;
+
         return;
     }
 
-    // Compute elapsed time as a floating point value.
-    elapsedTime = (double)(uptimeSeconds - lastUptimeSeconds) + \
-            ((uptimeExtraMS - lastUptimeExtraMS) / 1000.0);
+    // Compute the elapsed time since the last call to this function and
+    // return if a whole second has not passed.
+    elapsedTime = currUptimeSeconds - lastUptimeSeconds;
+    if (elapsedTime <= 0) return;
 
-    // Update 'last' values; they are updated here to minimize time time
-    // lossage from the remaining processing in this function.
-    lastUptimeSeconds = uptimeSeconds;
-    lastUptimeExtraMS = uptimeExtraMS;
+    // Update last uptime value; do not use it again in this function
+    lastUptimeSeconds = currUptimeSeconds;
 
-    // Increment all counters and decide later which to clear
-    timers->coolOff += elapsedTime;
-    timers->coolOn += elapsedTime;
-    timers->fanOff += elapsedTime;
-    timers->fanOn += elapsedTime;
-    timers->heatOff += elapsedTime;
-    timers->heatOn += elapsedTime;
-    
-    // Clear counters to zero based on system state
+    // Update counters based on state; reporting interval counters are reset
+    // when a report is transmitted.
     switch (currentState) {
 
         // Cool ON implies Fan ON
         case COOL_ON:
-            timers->coolOff = 0;
             timers->fanOff = 0;
+            timers->coolOff = 0;
             timers->heatOn = 0;
+
+            timers->fanOn += elapsedTime;
+            timers->coolOn += elapsedTime;
+            timers->heatOff += elapsedTime;
+
+            timers->fanOn_repInterval += elapsedTime;
+            timers->coolOn_repInterval += elapsedTime;
+            timers->heatOff_repInterval += elapsedTime;
+
             break;
 
         // Heat ON implies Fan ON
         case HEAT_ON:
-            timers->heatOff = 0;
             timers->fanOff = 0;
             timers->coolOn = 0;
+            timers->heatOff = 0;
+
+            timers->fanOn += elapsedTime;
+            timers->coolOff += elapsedTime;
+            timers->heatOn += elapsedTime;
+
+            timers->fanOn_repInterval += elapsedTime;
+            timers->coolOff_repInterval += elapsedTime;
+            timers->heatOn_repInterval += elapsedTime;
+
             break;
 
         // Cool OFF/Fan ON implies that cool was recently on
         case COOL_OFF_FAN_ON:
-            timers->coolOn = 0;
             timers->fanOff = 0;
+            timers->coolOn = 0;
             timers->heatOn = 0;
+
+            timers->fanOn += elapsedTime;
+            timers->coolOff += elapsedTime;
+            timers->heatOff += elapsedTime;
+
+            timers->fanOn_repInterval += elapsedTime;
+            timers->coolOff_repInterval += elapsedTime;
+            timers->heatOff_repInterval += elapsedTime;
+
             break;
 
         // Heat OFF/Fan ON implies that heat was recently on
         case HEAT_OFF_FAN_ON:
-            timers->heatOn = 0;
             timers->fanOff = 0;
             timers->coolOn = 0;
+            timers->heatOn = 0;
+
+            timers->fanOn += elapsedTime;
+            timers->coolOff += elapsedTime;
+            timers->heatOff += elapsedTime;
+
+            timers->fanOn_repInterval += elapsedTime;
+            timers->coolOff_repInterval += elapsedTime;
+            timers->heatOff_repInterval += elapsedTime;
+
             break;
 
         // Fan ON implies that cool/heat are off and that the previous
         // usage of cool/heat are not known.
         case FAN_ON:
+            timers->fanOff = 0;
             timers->coolOn = 0;
             timers->heatOn = 0;
-            timers->fanOff = 0;
+
+            timers->fanOn += elapsedTime;
+            timers->coolOff += elapsedTime;
+            timers->heatOff += elapsedTime;
+
+            timers->fanOn_repInterval += elapsedTime;
+            timers->coolOff_repInterval += elapsedTime;
+            timers->heatOff_repInterval += elapsedTime;
+
             break;
 
         // All OFF implies that cool/heat/fan are off
         case ALL_OFF:
+            timers->fanOn = 0;
             timers->coolOn = 0;
             timers->heatOn = 0;
-            timers->fanOn = 0;
+
+            timers->fanOff += elapsedTime;
+            timers->coolOff += elapsedTime;
+            timers->heatOff += elapsedTime;
+
+            timers->fanOff_repInterval += elapsedTime;
+            timers->coolOff_repInterval += elapsedTime;
+            timers->heatOff_repInterval += elapsedTime;
+
             break;
     }
 
     // I/O watchdog timer handling; if ioWatchdogSeconds is zero
     // the timer is disabled.
     if (ioWatchdogSeconds != 0) {
-        if ((uptimeSeconds - ioWatchdogLastReset) > ioWatchdogSeconds) {
+        if ((currUptimeSeconds - ioWatchdogLastReset) > ioWatchdogSeconds) {
             // Ideally, the current state information would be saved now
             // before doing a reset.
             RESET();
@@ -293,8 +366,61 @@ uint8_t i2c_write(uint8_t dataAddress, uint8_t dataByte) {
 }
 
 
+void sendXbeeStatusReport(ACControlTimers *timers) {
+    uint8_t state;
+    static uint8_t sequenceNumber = 0;  // Report sequence counter
+    static unsigned long lastUptimeSeconds = 0;
+    unsigned long currUptimeSeconds;
+
+    currUptimeSeconds = uptimeSeconds;  // Capture this now in case it updates
+    if (lastUptimeSeconds == 0) lastUptimeSeconds = currUptimeSeconds;
+
+    xbee_status.sequenceNumber = sequenceNumber++;
+    xbee_status.uptime = currUptimeSeconds;
+
+    state = (systemLines.fan == 1) ? 1 : 0;
+    state += (systemLines.cool == 1) ? 2 : 0;
+    state += (systemLines.heat == 1) ? 4 : 0;
+    xbee_status.systemState = state;
+
+    state = (thermostatLines.fan == 1) ? 1 : 0;
+    state += (thermostatLines.cool == 1) ? 2 : 0;
+    state += (thermostatLines.heat == 1) ? 4 : 0;
+    xbee_status.thermostatState = state;
+
+    xbee_status.currentState = (uint8_t) currentState;
+    xbee_status.targetState = (uint8_t) targetState;
+
+    xbee_status.timer_fanOn = timers->fanOn;
+    xbee_status.timer_fanOff = timers->fanOff;
+    xbee_status.timer_coolOn = timers->coolOn;
+    xbee_status.timer_coolOff = timers->coolOff;
+    xbee_status.timer_heatOn = timers->heatOn;
+    xbee_status.timer_heatOff = timers->heatOff;
+
+    xbee_status.accum_fanOn = timers->fanOn_repInterval;
+    xbee_status.accum_fanOff = timers->fanOff_repInterval;
+    xbee_status.accum_coolOn = timers->coolOn_repInterval;
+    xbee_status.accum_coolOff = timers->coolOff_repInterval;
+    xbee_status.accum_heatOn = timers->heatOn_repInterval;
+    xbee_status.accum_heatOff = timers->heatOff_repInterval;
+
+    XBeePacket_APISendData(XBEE_DEST_MAC_HI, XBEE_DEST_MAC_LO, 0xfffe, sizeof(xbee_status), (uint8_t *)&xbee_status);
+
+    // Reset the reporting interval counters
+    timers->fanOn_repInterval = 0;
+    timers->fanOff_repInterval = 0;
+    timers->coolOn_repInterval = 0;
+    timers->coolOff_repInterval = 0;
+    timers->heatOn_repInterval = 0;
+    timers->heatOff_repInterval = 0;
+
+}
+
+
 void main(void) {
     ControlStateDescription newState;
+    unsigned long currUptimeSeconds;
 
     // Initialize the PIC device
     SYSTEM_Initialize();
@@ -314,13 +440,30 @@ void main(void) {
     // Enable watchdog timer: 4ms * 1024 postscaler = 4.09sec
     SWDTEN = 1;
 
+    // Get our node identifier from the XBee module
+    strcpy(xbee_command_str, "NI");
+    xbee_status.nodeName[0] = 0x00;
+    if (XBeePacket_APISendATCommand(xbee_command_str, xbee_response_str) == 0) {
+        // first char of response is a space; skip it
+        strncpy(xbee_status.nodeName, xbee_response_str+1, XBEE_NI_MAXLEN);
+        xbee_status.nodeName[XBEE_NI_MAXLEN] = 0x00;
+    }
+    // Set time for first status report
+    xbee_nextReportTime = uptimeSeconds + XBEE_REPORT_INTERVAL_SEC;
+    // Populate static parts of status report
+    xbee_status.packetType = 1;     // A/C controller packet type
+    xbee_status.versionMajor = FIRMWARE_VERSION_MAJOR;
+    xbee_status.versionMinor = FIRMWARE_VERSION_MINOR;
+
     while (1)     {
-        CLRWDT();
-        updateTimers(&stateTimers, currentState);
+        CLRWDT();  // Clear the watchdog timer
+
+        currUptimeSeconds = uptimeSeconds;  // Capture this now in case it updates
+        updateTimers(&stateTimers, currentState); // Update all state counters
 
         // Heartbeat light
         CIRCUIT_HEARTBEAT = ~CIRCUIT_HEARTBEAT;
-        IO_RA4_Toggle();
+        //IO_RA4_Toggle();
 
         // Read requested control functions from thermostat
         thermostatLines.fan = (THERMOSTAT_FAN == 0) ? 0 : 1;
@@ -384,7 +527,13 @@ void main(void) {
             }
         }
 
-        CLRWDT();
+        // Report status via XBee radio module
+        if (currUptimeSeconds > xbee_nextReportTime) {
+            xbee_nextReportTime += XBEE_REPORT_INTERVAL_SEC;
+            sendXbeeStatusReport(&stateTimers);
+        }
+
+        CLRWDT();  // Clear the watchdog timer
         sleep(SECONDS_BETWEEN_SAMPLES);
     }
 }

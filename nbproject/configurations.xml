@@ -19,6 +19,7 @@
       <itemPath>pinfunctions.h</itemPath>
       <itemPath>datatypes.h</itemPath>
       <itemPath>statemachine.h</itemPath>
+      <itemPath>XBeeAPIPackets.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -40,6 +41,7 @@
       <itemPath>main.c</itemPath>
       <itemPath>sleep.c</itemPath>
       <itemPath>statemachine.c</itemPath>
+      <itemPath>XBeeAPIPackets.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
