@@ -20,7 +20,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      3
-#define FIRMWARE_VERSION_MINOR      0
+#define FIRMWARE_VERSION_MINOR      1
 
 // XBee Configuration
 #define XBEE_DEST_MAC_HI            0x0013A200
@@ -140,7 +140,7 @@ void updateTimers(ACControlTimers *timers, ControlStateDescription currentState)
     unsigned long currUptimeSeconds, elapsedTime;
 
     currUptimeSeconds = uptimeSeconds; // Capture this now in case it updates
-
+    
     if (currentState == INITIAL) {
         lastUptimeSeconds = currUptimeSeconds;
 
@@ -370,10 +370,11 @@ void sendXbeeStatusReport(ACControlTimers *timers) {
     uint8_t state;
     static uint8_t sequenceNumber = 0;  // Report sequence counter
     static unsigned long lastUptimeSeconds = 0;
-    unsigned long currUptimeSeconds;
+    unsigned long currUptimeSeconds, deltaUptimeSeconds;
 
     currUptimeSeconds = uptimeSeconds;  // Capture this now in case it updates
     if (lastUptimeSeconds == 0) lastUptimeSeconds = currUptimeSeconds;
+    deltaUptimeSeconds = currUptimeSeconds - lastUptimeSeconds;
 
     xbee_status.sequenceNumber = sequenceNumber++;
     xbee_status.uptime = currUptimeSeconds;
@@ -398,12 +399,12 @@ void sendXbeeStatusReport(ACControlTimers *timers) {
     xbee_status.timer_heatOn = timers->heatOn;
     xbee_status.timer_heatOff = timers->heatOff;
 
-    xbee_status.accum_fanOn = timers->fanOn_repInterval;
-    xbee_status.accum_fanOff = timers->fanOff_repInterval;
-    xbee_status.accum_coolOn = timers->coolOn_repInterval;
-    xbee_status.accum_coolOff = timers->coolOff_repInterval;
-    xbee_status.accum_heatOn = timers->heatOn_repInterval;
-    xbee_status.accum_heatOff = timers->heatOff_repInterval;
+    xbee_status.accum_fanOn = (timers->fanOn >= deltaUptimeSeconds) ? deltaUptimeSeconds : timers->fanOn_repInterval;
+    xbee_status.accum_fanOff = (timers->fanOff >= deltaUptimeSeconds) ? deltaUptimeSeconds : timers->fanOff_repInterval;
+    xbee_status.accum_coolOn = (timers->coolOn >= deltaUptimeSeconds) ? deltaUptimeSeconds : timers->coolOn_repInterval;
+    xbee_status.accum_coolOff = (timers->coolOff >= deltaUptimeSeconds) ? deltaUptimeSeconds : timers->coolOff_repInterval;
+    xbee_status.accum_heatOn = (timers->heatOn >= deltaUptimeSeconds) ? deltaUptimeSeconds : timers->heatOn_repInterval;
+    xbee_status.accum_heatOff = (timers->heatOff >= deltaUptimeSeconds) ? deltaUptimeSeconds : timers->heatOff_repInterval;
 
     XBeePacket_APISendData(XBEE_DEST_MAC_HI, XBEE_DEST_MAC_LO, 0xfffe, sizeof(xbee_status), (uint8_t *)&xbee_status);
 
@@ -415,6 +416,7 @@ void sendXbeeStatusReport(ACControlTimers *timers) {
     timers->heatOn_repInterval = 0;
     timers->heatOff_repInterval = 0;
 
+    lastUptimeSeconds = currUptimeSeconds;
 }
 
 
