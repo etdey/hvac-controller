@@ -20,7 +20,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      3
-#define FIRMWARE_VERSION_MINOR      1
+#define FIRMWARE_VERSION_MINOR      8
 
 // XBee Configuration
 #define XBEE_DEST_MAC_HI            0x0013A200
@@ -29,6 +29,7 @@
 #define XBEE_COMMAND_MAXLEN         250
 #define XBEE_RESPONSE_MAXLEN        250
 #define XBEE_REPORT_INTERVAL_SEC    60
+#define XBEE_REPORT_INTERVAL0_SEC   5
 
 //
 // Global variables for the module
@@ -40,7 +41,7 @@ ACControlTimers stateTimers;
 ACStateMachine fsm;
 
 volatile unsigned long uptimeSeconds = 0; // whole seconds since startup
-volatile double uptimeExtraMS = 0.0;      // milliseconds component of uptime
+volatile unsigned long uptimeExtraNS = 0; // nanoseconds component of uptime
 
 unsigned char ioWatchdogSeconds = 0; // number of seconds; zero to disable
 unsigned long ioWatchdogLastReset = 0; // timestamp of last I/O WD reset
@@ -49,6 +50,9 @@ char xbee_command_str[XBEE_COMMAND_MAXLEN+1];
 char xbee_response_str[XBEE_COMMAND_MAXLEN+1];
 XBeeStatusPayload xbee_status;
 unsigned long xbee_nextReportTime;
+
+unsigned long timerCallbackPeriodNsec;
+
 
 //
 // Send the system state to the control board
@@ -122,11 +126,17 @@ ControlStateDescription evaluateState(ACControlLines *lines, ConditioningFunctio
 // TMR0 ISR every 100ms.
 //
 void timerInterruptCallback() {
-    uptimeExtraMS += MSEC_BETWEEN_TIMER_CALLBACKS;
-    while (uptimeExtraMS >= 1000.0) {
-        uptimeExtraMS -= 1000.0;
+    uptimeExtraNS += timerCallbackPeriodNsec;
+    while (uptimeExtraNS >= 1000000000) {
+        uptimeExtraNS -= 1000000000;
         uptimeSeconds++;
-        IO_RA4_Toggle();
+
+        // Heartbeat light
+        CIRCUIT_HEARTBEAT = ~CIRCUIT_HEARTBEAT;
+        //IO_RA4_Toggle();
+
+        // Clear old status light
+        CIRCUIT_STATUS = 0;
     }
 }
 
@@ -450,8 +460,16 @@ void main(void) {
         strncpy(xbee_status.nodeName, xbee_response_str+1, XBEE_NI_MAXLEN);
         xbee_status.nodeName[XBEE_NI_MAXLEN] = 0x00;
     }
+
+    // Set the oscillator correction factor based on the unit name
+    if (strcmp("ACDOWN",xbee_status.nodeName) == 0) {
+        timerCallbackPeriodNsec = NSEC_BETWEEN_TIMER_CALLBACKS_DOWN;
+    } else {
+        timerCallbackPeriodNsec = NSEC_BETWEEN_TIMER_CALLBACKS_UP;
+    }
+
     // Set time for first status report
-    xbee_nextReportTime = uptimeSeconds + XBEE_REPORT_INTERVAL_SEC;
+    xbee_nextReportTime = uptimeSeconds + XBEE_REPORT_INTERVAL0_SEC;
     // Populate static parts of status report
     xbee_status.packetType = 1;     // A/C controller packet type
     xbee_status.versionMajor = FIRMWARE_VERSION_MAJOR;
@@ -462,10 +480,6 @@ void main(void) {
 
         currUptimeSeconds = uptimeSeconds;  // Capture this now in case it updates
         updateTimers(&stateTimers, currentState); // Update all state counters
-
-        // Heartbeat light
-        CIRCUIT_HEARTBEAT = ~CIRCUIT_HEARTBEAT;
-        //IO_RA4_Toggle();
 
         // Read requested control functions from thermostat
         thermostatLines.fan = (THERMOSTAT_FAN == 0) ? 0 : 1;
@@ -530,7 +544,7 @@ void main(void) {
         }
 
         // Report status via XBee radio module
-        if (currUptimeSeconds > xbee_nextReportTime) {
+        if (currUptimeSeconds >= xbee_nextReportTime) {
             xbee_nextReportTime += XBEE_REPORT_INTERVAL_SEC;
             sendXbeeStatusReport(&stateTimers);
         }

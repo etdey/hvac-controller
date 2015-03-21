@@ -48,6 +48,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
   Section: Included Files
 */
 #include "eusart.h"
+#include "../pinfunctions.h"
 
 /**
   Section: Macro Declarations
@@ -172,6 +173,9 @@ void EUSART_Transmit_ISR(void)
             eusartTxTail = 0;
         }
         eusartTxBufferRemaining++;
+
+        // Turn on status light to indicate activity
+        CIRCUIT_STATUS = 1;
     }
     else
     {
@@ -196,6 +200,9 @@ void EUSART_Receive_ISR(void)
         eusartRxHead = 0;
     }
     eusartRxCount++;
+
+    // Turn on status light to indicate activity
+    CIRCUIT_STATUS = 1;
 }
 /**
   End of File
