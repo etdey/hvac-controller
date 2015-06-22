@@ -20,7 +20,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      3
-#define FIRMWARE_VERSION_MINOR      8
+#define FIRMWARE_VERSION_MINOR      10
 
 // XBee Configuration
 #define XBEE_DEST_MAC_HI            0x0013A200

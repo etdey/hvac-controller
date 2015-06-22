@@ -28,8 +28,8 @@ extern "C" {
 // Computing adjustment to prior value:
 // int((1 - ({ErrorSeconds}/{ElapsedSeconds})) * {PreviousValue})
 //
-#define NSEC_BETWEEN_TIMER_CALLBACKS_UP    81768098
-#define NSEC_BETWEEN_TIMER_CALLBACKS_DOWN  81770697
+#define NSEC_BETWEEN_TIMER_CALLBACKS_UP    81767916
+#define NSEC_BETWEEN_TIMER_CALLBACKS_DOWN  81768884
 
 // Times requirements for state transitions. Values are in seconds.
 #define COOL_ON_TO_COOL_OFF         1200   /*  20 minutes */
