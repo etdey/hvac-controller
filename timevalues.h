@@ -26,10 +26,11 @@ extern "C" {
 // NSEC_BETWEEN_TIMER_CALLBACKS = 100000000ns / {OscillatorError}
 //
 // Computing adjustment to prior value:
-// int((1 - ({ErrorSeconds}/{ElapsedSeconds})) * {PreviousValue})
+// ErrorSeconds = deltaClockReported - deltaClockComputed
+// newValue = int((1 - ({ErrorSeconds}/{ElapsedSeconds})) * {PreviousValue})
 //
-#define NSEC_BETWEEN_TIMER_CALLBACKS_UP    81767916
-#define NSEC_BETWEEN_TIMER_CALLBACKS_DOWN  81768859
+#define NSEC_BETWEEN_TIMER_CALLBACKS_UP    81765896
+#define NSEC_BETWEEN_TIMER_CALLBACKS_DOWN  81766911
 
 // Times requirements for state transitions. Values are in seconds.
 #define COOL_ON_TO_COOL_OFF         1200   /*  20 minutes */
