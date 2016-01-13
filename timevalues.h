@@ -29,8 +29,8 @@ extern "C" {
 // ErrorSeconds = deltaClockReported - deltaClockComputed
 // newValue = int((1 - ({ErrorSeconds}/{ElapsedSeconds})) * {PreviousValue})
 //
-#define NSEC_BETWEEN_TIMER_CALLBACKS_UP    81765896
-#define NSEC_BETWEEN_TIMER_CALLBACKS_DOWN  81766911
+#define NSEC_BETWEEN_TIMER_CALLBACKS_UP    81765893
+#define NSEC_BETWEEN_TIMER_CALLBACKS_DOWN  81766878
 
 // Times requirements for state transitions. Values are in seconds.
 #define COOL_ON_TO_COOL_OFF         1200   /*  20 minutes */
