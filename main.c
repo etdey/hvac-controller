@@ -1,7 +1,7 @@
 //
 // main.c
 //
-// Copyright (C) 2014 by Eric Dey. All rights reserved.
+// Copyright (C) 2016 by Eric Dey. All rights reserved.
 //
 // Air conditioner controller.
 //
@@ -20,7 +20,7 @@
 
 // Firmware version values must be 0-255.
 #define FIRMWARE_VERSION_MAJOR      3
-#define FIRMWARE_VERSION_MINOR      12
+#define FIRMWARE_VERSION_MINOR      13
 
 // XBee Configuration
 #define XBEE_DEST_MAC_HI            0x0013A200
@@ -353,6 +353,9 @@ uint8_t i2c_read(uint8_t dataAddress) {
         case REG_OSCCON:
             retVal = (uint8_t) OSCCON;
             break;
+
+        default:
+            retVal = 0;  // undefined address
     }
 
     return(retVal);
