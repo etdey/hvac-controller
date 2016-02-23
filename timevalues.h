@@ -1,7 +1,7 @@
 //
 // timevalues.h
 //
-// Copyright (C) 2014 by Eric Dey. All rights reserved.
+// Copyright (C) 2016 by Eric Dey. All rights reserved.
 //
 // Time transition values
 //
