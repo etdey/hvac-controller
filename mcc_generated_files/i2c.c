@@ -7,6 +7,7 @@
 
 
 #include "mcc.h"
+#include "../datatypes.h"
 
 #define I2C_SLAVE_ADDRESS 24
 #define I2C_SLAVE_MASK    127
@@ -149,7 +150,7 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
         case I2C_SLAVE_READ_REQUEST:
             // Process the data read request in the main module
             SSPBUF = i2c_read(dataAddress++);
-            if (dataAddress >= 255) dataAddress = 0;
+            if (dataAddress >= DATA_ADDR_END) dataAddress = 0;
             break;
 
         case I2C_SLAVE_READ_COMPLETED:
