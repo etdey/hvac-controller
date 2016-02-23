@@ -13,16 +13,16 @@
   @Description:
     This header file provides implementations for pin APIs for all pins selected in the GUI.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.0.1
+        Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F25K20
         Version           :  1.01
     The generated drivers are tested against the following:
-        Compiler          :  XC8 v1.31
-        MPLAB             :  MPLAB X 2.10
+        Compiler          :  XC8 v1.34
+        MPLAB             :  MPLAB X v2.35 or v3.00
 */
 
 /*
-Copyright (c) 2013 - 2014 released Microchip Technology Inc.  All rights reserved.
+Copyright (c) 2013 - 2015 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -126,37 +126,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define IO_RA4_SetDigitalInput()    do { TRISA4 = 1; } while(0)
 #define IO_RA4_SetDigitalOutput()   do { TRISA4 = 0; } while(0)
 
-// get/set RA5 procedures
-#define RA5_SetHigh()    do { LATA5 = 1; } while(0)
-#define RA5_SetLow()   do { LATA5 = 0; } while(0)
-#define RA5_Toggle()   do { LATA5 = ~LATA5; } while(0)
-#define RA5_GetValue()         PORTAbits.RA5
-#define RA5_SetDigitalInput()    do { TRISA5 = 1; } while(0)
-#define RA5_SetDigitalOutput()   do { TRISA5 = 0; } while(0)
-#define RA5_SetAnalogMode()   do { ANS4 = 1; } while(0)
-#define RA5_SetDigitalMode()   do { ANS4 = 0; } while(0)
-// get/set OSC2 aliases
-#define OSC2_TRIS               TRISA6
-#define OSC2_LAT                LATA6
-#define OSC2_PORT               PORTAbits.RA6
-#define OSC2_SetHigh()    do { LATA6 = 1; } while(0)
-#define OSC2_SetLow()   do { LATA6 = 0; } while(0)
-#define OSC2_Toggle()   do { LATA6 = ~LATA6; } while(0)
-#define OSC2_GetValue()         PORTAbits.RA6
-#define OSC2_SetDigitalInput()    do { TRISA6 = 1; } while(0)
-#define OSC2_SetDigitalOutput()   do { TRISA6 = 0; } while(0)
-
-// get/set OSC1 aliases
-#define OSC1_TRIS               TRISA7
-#define OSC1_LAT                LATA7
-#define OSC1_PORT               PORTAbits.RA7
-#define OSC1_SetHigh()    do { LATA7 = 1; } while(0)
-#define OSC1_SetLow()   do { LATA7 = 0; } while(0)
-#define OSC1_Toggle()   do { LATA7 = ~LATA7; } while(0)
-#define OSC1_GetValue()         PORTAbits.RA7
-#define OSC1_SetDigitalInput()    do { TRISA7 = 1; } while(0)
-#define OSC1_SetDigitalOutput()   do { TRISA7 = 0; } while(0)
-
 // get/set IO_RB0 aliases
 #define IO_RB0_TRIS               TRISB0
 #define IO_RB0_LAT                LATB0
@@ -208,69 +177,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define IO_RB2_ResetPullup()   do { WPUB2 = 0; } while(0)
 #define IO_RB2_SetAnalogMode()   do { ANS8 = 1; } while(0)
 #define IO_RB2_SetDigitalMode()   do { ANS8 = 0; } while(0)
-// get/set RB3 procedures
-#define RB3_SetHigh()    do { LATB3 = 1; } while(0)
-#define RB3_SetLow()   do { LATB3 = 0; } while(0)
-#define RB3_Toggle()   do { LATB3 = ~LATB3; } while(0)
-#define RB3_GetValue()         PORTBbits.RB3
-#define RB3_SetDigitalInput()    do { TRISB3 = 1; } while(0)
-#define RB3_SetDigitalOutput()   do { TRISB3 = 0; } while(0)
-#define RB3_SetPullup()    do { WPUB3 = 1; } while(0)
-#define RB3_ResetPullup()   do { WPUB3 = 0; } while(0)
-#define RB3_SetAnalogMode()   do { ANS9 = 1; } while(0)
-#define RB3_SetDigitalMode()   do { ANS9 = 0; } while(0)
-// get/set RB4 procedures
-#define RB4_SetHigh()    do { LATB4 = 1; } while(0)
-#define RB4_SetLow()   do { LATB4 = 0; } while(0)
-#define RB4_Toggle()   do { LATB4 = ~LATB4; } while(0)
-#define RB4_GetValue()         PORTBbits.RB4
-#define RB4_SetDigitalInput()    do { TRISB4 = 1; } while(0)
-#define RB4_SetDigitalOutput()   do { TRISB4 = 0; } while(0)
-#define RB4_SetPullup()    do { WPUB4 = 1; } while(0)
-#define RB4_ResetPullup()   do { WPUB4 = 0; } while(0)
-#define RB4_SetAnalogMode()   do { ANS11 = 1; } while(0)
-#define RB4_SetDigitalMode()   do { ANS11 = 0; } while(0)
-// get/set RB5 procedures
-#define RB5_SetHigh()    do { LATB5 = 1; } while(0)
-#define RB5_SetLow()   do { LATB5 = 0; } while(0)
-#define RB5_Toggle()   do { LATB5 = ~LATB5; } while(0)
-#define RB5_GetValue()         PORTBbits.RB5
-#define RB5_SetDigitalInput()    do { TRISB5 = 1; } while(0)
-#define RB5_SetDigitalOutput()   do { TRISB5 = 0; } while(0)
-#define RB5_SetPullup()    do { WPUB5 = 1; } while(0)
-#define RB5_ResetPullup()   do { WPUB5 = 0; } while(0)
-// get/set RB6 procedures
-#define RB6_SetHigh()    do { LATB6 = 1; } while(0)
-#define RB6_SetLow()   do { LATB6 = 0; } while(0)
-#define RB6_Toggle()   do { LATB6 = ~LATB6; } while(0)
-#define RB6_GetValue()         PORTBbits.RB6
-#define RB6_SetDigitalInput()    do { TRISB6 = 1; } while(0)
-#define RB6_SetDigitalOutput()   do { TRISB6 = 0; } while(0)
-#define RB6_SetPullup()    do { WPUB6 = 1; } while(0)
-#define RB6_ResetPullup()   do { WPUB6 = 0; } while(0)
-// get/set RB7 procedures
-#define RB7_SetHigh()    do { LATB7 = 1; } while(0)
-#define RB7_SetLow()   do { LATB7 = 0; } while(0)
-#define RB7_Toggle()   do { LATB7 = ~LATB7; } while(0)
-#define RB7_GetValue()         PORTBbits.RB7
-#define RB7_SetDigitalInput()    do { TRISB7 = 1; } while(0)
-#define RB7_SetDigitalOutput()   do { TRISB7 = 0; } while(0)
-#define RB7_SetPullup()    do { WPUB7 = 1; } while(0)
-#define RB7_ResetPullup()   do { WPUB7 = 0; } while(0)
-// get/set RC0 procedures
-#define RC0_SetHigh()    do { LATC0 = 1; } while(0)
-#define RC0_SetLow()   do { LATC0 = 0; } while(0)
-#define RC0_Toggle()   do { LATC0 = ~LATC0; } while(0)
-#define RC0_GetValue()         PORTCbits.RC0
-#define RC0_SetDigitalInput()    do { TRISC0 = 1; } while(0)
-#define RC0_SetDigitalOutput()   do { TRISC0 = 0; } while(0)
-// get/set RC1 procedures
-#define RC1_SetHigh()    do { LATC1 = 1; } while(0)
-#define RC1_SetLow()   do { LATC1 = 0; } while(0)
-#define RC1_Toggle()   do { LATC1 = ~LATC1; } while(0)
-#define RC1_GetValue()         PORTCbits.RC1
-#define RC1_SetDigitalInput()    do { TRISC1 = 1; } while(0)
-#define RC1_SetDigitalOutput()   do { TRISC1 = 0; } while(0)
 // get/set IO_RC2 aliases
 #define IO_RC2_TRIS               TRISC2
 #define IO_RC2_LAT                LATC2
@@ -336,10 +242,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define RX_GetValue()         PORTCbits.RC7
 #define RX_SetDigitalInput()    do { TRISC7 = 1; } while(0)
 #define RX_SetDigitalOutput()   do { TRISC7 = 0; } while(0)
-
-// get/set MCLR aliases
-#define MCLR_PORT               PORTEbits.RE3
-#define MCLR_GetValue()         PORTEbits.RE3
 
 
 /**

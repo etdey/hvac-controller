@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<configuration device="PIC18F25K20" mcc_version="v2.0.1">
+<configuration device="PIC18F25K20" mcc_version="v2.25.2">
     <managers>
         <manager generated="true" name="Pin Manager" reloadPin="manual">
             <setting name="package" option="PDIP28"/>
@@ -18,17 +18,17 @@
             <resource customName="IO_RC5" digital="true" direction="INPUT" function="RC5" module="GPIO" name="RC5" start="false" type="pin" wpu="false"/>
             <resource customName="TX" digital="true" direction="INPUT" function="TX" module="EUSART" name="RC6" start="false" type="pin" wpu="false"/>
             <resource customName="RX" digital="true" direction="INPUT" function="RX" module="EUSART" name="RC7" start="false" type="pin" wpu="false"/>
-            <file checksum="988184748" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="1628465712" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="3752690897" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="2138181354" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
-                <setting name="SCS" option="FOSC"/>
-                <setting name="IDLEN" option="disabled"/>
-                <setting name="IRCF" option="8MHz_HFINTOSC/2"/>
-                <setting name="INTSRC" option="disabled"/>
-                <setting name="PLLEN" option="disabled"/>
-                <setting name="TUN" option="0x00"/>
+                <setting name="SCS" option="FOSC" register="OSCCON"/>
+                <setting name="IDLEN" option="disabled" register="OSCCON"/>
+                <setting name="IRCF" option="8MHz_HFINTOSC/2" register="OSCCON"/>
+                <setting name="INTSRC" option="disabled" register="OSCTUNE"/>
+                <setting name="PLLEN" option="disabled" register="OSCTUNE"/>
+                <setting name="TUN" option="0x00" register="OSCTUNE"/>
                 <additionalSetting name="pllMultiplier" option=""/>
                 <additionalSetting name="extclk" option="32.0 MHz"/>
             </initializer>
@@ -68,15 +68,15 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="1718471111" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
-            <file checksum="3968076784" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+            <file checksum="1173540056" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="4068678938" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">
             <setting name="preemptHigh" option="true"/>
             <setting name="preemptLow" option="true"/>
             <setting name="useIPEN" option="false"/>
-            <file checksum="1529503315" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
-            <file checksum="3637066190" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
+            <file checksum="1238917476" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
+            <file checksum="3425844447" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
             <interrupt module="TMR0" name="TMRI" priority="2"/>
             <interrupt module="MSSP" name="SSPI" priority="2"/>
             <interrupt module="EUSART" name="RCI" priority="2"/>
@@ -98,14 +98,14 @@
         </module>
         <module generated="true" mode="Timer" name="TMR0" order="1" reloadPin="manual" type="tmr_timer0">
             <initializer comment="" name="Initialize">
-                <setting name="TMR0ON" option="enabled"/>
-                <setting name="T0SE" option="Increment_hi_lo"/>
-                <setting name="PSA" option="not_assigned"/>
-                <setting name="T0CS" option="FOSC/4"/>
-                <setting name="T08BIT" option="16-bit"/>
-                <setting name="T0PS" option="1:256"/>
-                <setting name="TMR0H" option="99"/>
-                <setting name="TMR0L" option="192"/>
+                <setting name="TMR0ON" option="enabled" register="T0CON"/>
+                <setting name="T0SE" option="Increment_hi_lo" register="T0CON"/>
+                <setting name="PSA" option="not_assigned" register="T0CON"/>
+                <setting name="T0CS" option="FOSC/4" register="T0CON"/>
+                <setting name="T08BIT" option="16-bit" register="T0CON"/>
+                <setting name="T0PS" option="1:256" register="T0CON"/>
+                <setting name="TMR0H" option="99" register="TMR0H"/>
+                <setting name="TMR0L" option="192" register="TMR0L"/>
                 <additionalSetting name="TMR0" option="25536"/>
                 <additionalSetting name="timerstart" option="enabled"/>
                 <additionalSetting name="extfreq" option="100 kHz"/>
@@ -113,73 +113,73 @@
             </initializer>
             <setting name="TMRI" option="true"/>
             <setting name="ticker" option="20"/>
-            <file checksum="2149232699" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
-            <file checksum="1146512031" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
+            <file checksum="111585078" modified="true" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
+            <file checksum="2379769264" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
         </module>
         <module generated="true" mode="I2C Slave Interrupt" name="MSSP" order="2" reloadPin="manual" type="mssp">
             <initializer comment="" name="Initialize">
-                <setting name="BF" option="RCinprocess_TXcomplete"/>
-                <setting name="UA" option="dontupdate"/>
-                <setting name="SMP" option="Standard Speed"/>
-                <setting name="P" option="stopbit_notdetected"/>
-                <setting name="S" option="startbit_notdetected"/>
-                <setting name="R_nW" option="write_noTX"/>
-                <setting name="CKE" option="Idle to Active"/>
-                <setting name="D_nA" option="lastbyte_address"/>
-                <setting name="SSPEN" option="enabled"/>
-                <setting name="WCOL" option="no_collision"/>
-                <setting name="SSPOV" option="no_overflow"/>
-                <setting name="CKP" option="Idle:Low, Active:High"/>
-                <setting name="SSPM" option="7 Bit"/>
-                <setting name="ACKSTAT" option="received"/>
-                <setting name="RCEN" option="disabled"/>
-                <setting name="RSEN" option="disabled"/>
-                <setting name="ACKEN" option="disabled"/>
-                <setting name="ACKDT" option="acknowledge"/>
-                <setting name="SEN" option="disabled"/>
-                <setting name="GCEN" option="disabled"/>
-                <setting name="PEN" option="disabled"/>
-                <setting name="MSK0" option="0x0"/>
-                <setting name="SSPBUF" option="0x0"/>
-                <setting name="SSPADD" option="24"/>
+                <setting name="BF" option="RCinprocess_TXcomplete" register="SSPSTAT"/>
+                <setting name="UA" option="dontupdate" register="SSPSTAT"/>
+                <setting name="SMP" option="Standard Speed" register="SSPSTAT"/>
+                <setting name="P" option="stopbit_notdetected" register="SSPSTAT"/>
+                <setting name="S" option="startbit_notdetected" register="SSPSTAT"/>
+                <setting name="R_nW" option="write_noTX" register="SSPSTAT"/>
+                <setting name="CKE" option="Idle to Active" register="SSPSTAT"/>
+                <setting name="D_nA" option="lastbyte_address" register="SSPSTAT"/>
+                <setting name="SSPEN" option="enabled" register="SSPCON1"/>
+                <setting name="WCOL" option="no_collision" register="SSPCON1"/>
+                <setting name="SSPOV" option="no_overflow" register="SSPCON1"/>
+                <setting name="CKP" option="Idle:Low, Active:High" register="SSPCON1"/>
+                <setting name="SSPM" option="7 Bit" register="SSPCON1"/>
+                <setting name="ACKSTAT" option="received" register="SSPCON2"/>
+                <setting name="RCEN" option="disabled" register="SSPCON2"/>
+                <setting name="RSEN" option="disabled" register="SSPCON2"/>
+                <setting name="ACKEN" option="disabled" register="SSPCON2"/>
+                <setting name="ACKDT" option="acknowledge" register="SSPCON2"/>
+                <setting name="SEN" option="disabled" register="SSPCON2"/>
+                <setting name="GCEN" option="disabled" register="SSPCON2"/>
+                <setting name="PEN" option="disabled" register="SSPCON2"/>
+                <setting name="MSK0" option="127" register="SSPMSK"/>
+                <setting name="SSPBUF" option="0x0" register="SSPBUF"/>
+                <setting name="SSPADD" option="24" register="SSPADD"/>
             </initializer>
             <setting name="SSPM" option="7 Bit"/>
             <setting name="slaveAddress" option="0x18"/>
             <setting name="slaveAddressMask" option="0x7F"/>
             <setting name="writeBuffer" option="8"/>
             <setting name="readBuffer" option="8"/>
-            <file checksum="2336495778" modified="false" name="i2c.c" path="mcc_generated_files/i2c.c"/>
-            <file checksum="347135281" modified="false" name="i2c.h" path="mcc_generated_files/i2c.h"/>
+            <file checksum="549817339" modified="true" name="i2c.c" path="mcc_generated_files/i2c.c"/>
+            <file checksum="3175669803" modified="false" name="i2c.h" path="mcc_generated_files/i2c.h"/>
         </module>
         <module generated="true" mode="EUSART Asynchronous(NRZ)" name="EUSART" order="3" reloadPin="manual" type="uart_enh">
             <initializer comment="" name="Initialize">
-                <setting name="WUE" option="disabled"/>
-                <setting name="ABDEN" option="disabled"/>
-                <setting name="ABDOVF" option="no_overflow"/>
-                <setting name="RCIDL" option="idle"/>
-                <setting name="CKTXP" option="async_noninverted_sync_fallingedge"/>
-                <setting name="BRG16" option="16bit_generator"/>
-                <setting name="DTRXP" option="not_inverted"/>
-                <setting name="ADDEN" option="disabled"/>
-                <setting name="RX9" option="8-bit"/>
-                <setting name="RX9D" option="0x0"/>
-                <setting name="CREN" option="enabled"/>
-                <setting name="FERR" option="no_error"/>
-                <setting name="SPEN" option="enabled"/>
-                <setting name="SREN" option="disabled"/>
-                <setting name="OERR" option="no_error"/>
-                <setting name="CSRC" option="slave_mode"/>
-                <setting name="TRMT" option="TSR_empty"/>
-                <setting name="TXEN" option="enabled"/>
-                <setting name="BRGH" option="hi_speed"/>
-                <setting name="SYNC" option="asynchronous"/>
-                <setting name="SENDB" option="sync_break_complete"/>
-                <setting name="TX9D" option="0x0"/>
-                <setting name="TX9" option="8-bit"/>
-                <setting name="SPBRGL" option="64"/>
-                <setting name="SPBRGH" option="3"/>
-                <setting name="TXREG" option="0"/>
-                <setting name="RCREG" option="0"/>
+                <setting name="WUE" option="disabled" register="BAUDCON"/>
+                <setting name="ABDEN" option="disabled" register="BAUDCON"/>
+                <setting name="ABDOVF" option="no_overflow" register="BAUDCON"/>
+                <setting name="RCIDL" option="idle" register="BAUDCON"/>
+                <setting name="CKTXP" option="async_noninverted_sync_fallingedge" register="BAUDCON"/>
+                <setting name="BRG16" option="16bit_generator" register="BAUDCON"/>
+                <setting name="DTRXP" option="not_inverted" register="BAUDCON"/>
+                <setting name="ADDEN" option="disabled" register="RCSTA"/>
+                <setting name="RX9" option="8-bit" register="RCSTA"/>
+                <setting name="RX9D" option="0x0" register="RCSTA"/>
+                <setting name="CREN" option="enabled" register="RCSTA"/>
+                <setting name="FERR" option="no_error" register="RCSTA"/>
+                <setting name="SPEN" option="enabled" register="RCSTA"/>
+                <setting name="SREN" option="disabled" register="RCSTA"/>
+                <setting name="OERR" option="no_error" register="RCSTA"/>
+                <setting name="CSRC" option="slave_mode" register="TXSTA"/>
+                <setting name="TRMT" option="TSR_empty" register="TXSTA"/>
+                <setting name="TXEN" option="enabled" register="TXSTA"/>
+                <setting name="BRGH" option="hi_speed" register="TXSTA"/>
+                <setting name="SYNC" option="asynchronous" register="TXSTA"/>
+                <setting name="SENDB" option="sync_break_complete" register="TXSTA"/>
+                <setting name="TX9D" option="0x0" register="TXSTA"/>
+                <setting name="TX9" option="8-bit" register="TXSTA"/>
+                <setting name="SPBRGL" option="64" register="SPBRG"/>
+                <setting name="SPBRGH" option="3" register="SPBRGH"/>
+                <setting name="TXREG" option="0" register="TXREG"/>
+                <setting name="RCREG" option="0" register="RCREG"/>
                 <additionalSetting name="baudrateString" option="9600"/>
             </initializer>
             <setting name="RCI" option="true"/>
@@ -187,8 +187,8 @@
             <setting name="inputBuffer" option="64"/>
             <setting name="outputBuffer" option="64"/>
             <setting name="stdio" option="false"/>
-            <file checksum="1578165213" modified="false" name="eusart.c" path="mcc_generated_files/eusart.c"/>
-            <file checksum="2232998645" modified="false" name="eusart.h" path="mcc_generated_files/eusart.h"/>
+            <file checksum="941480088" modified="false" name="eusart.c" path="mcc_generated_files/eusart.c"/>
+            <file checksum="574419547" modified="false" name="eusart.h" path="mcc_generated_files/eusart.h"/>
         </module>
     </modules>
 </configuration>

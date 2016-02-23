@@ -13,16 +13,16 @@
   @Description
     This header file provides APIs for driver for EUSART.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.0.1
+        Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F25K20
         Driver Version    :  2.00
     The generated drivers are tested against the following:
-        Compiler          :  XC8 v1.31
-        MPLAB             :  MPLAB X 2.10
+        Compiler          :  XC8 v1.34
+        MPLAB             :  MPLAB X v2.35 or v3.00
 */
 
 /*
-Copyright (c) 2013 - 2014 released Microchip Technology Inc.  All rights reserved.
+Copyright (c) 2013 - 2015 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -116,12 +116,41 @@ void EUSART_Initialize(void);
     EUSART_Initialize() function should have been called
     before calling this function. The transfer status should be checked to see
     if the receiver is not empty before calling this function.
+	
+	EUSART_DataReady is a macro which checks if any byte is received.
+	Call this macro before using this function.
 
   @Param
     None
 
   @Returns
     A data byte received by the driver.
+	
+  @Example
+	<code>
+            void main(void) {
+								// initialize the device
+								SYSTEM_Initialize();
+								uint8_t data;
+								
+								// Enable the Global Interrupts
+								INTERRUPT_GlobalInterruptEnable();
+								
+								// Enable the Peripheral Interrupts
+								INTERRUPT_PeripheralInterruptEnable();
+								
+								printf("\t\tTEST CODE\n\r");		//Enable redirect STDIO to USART before using printf statements
+								printf("\t\t---- ----\n\r");
+								printf("\t\tECHO TEST\n\r");
+								printf("\t\t---- ----\n\n\r");
+								printf("Enter any string: ");
+								do{
+								data = EUSART1_Read();		// Read data received
+								EUSART_Write(data);			// Echo back the data received
+								}while(!EUSART1_DataReady);		//check if any data is received
+								
+							}
+    </code>
 */
 uint8_t EUSART_Read(void);
 
@@ -142,6 +171,11 @@ uint8_t EUSART_Read(void);
 
   @Returns
     None
+  
+  @Example
+      <code>
+          Refer to EUSART_Read() for an example	
+      </code>
 */
 void EUSART_Write(uint8_t txData);
 

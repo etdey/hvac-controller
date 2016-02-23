@@ -5,8 +5,12 @@
 //
 //
 
+
 #include "mcc.h"
-#include "../datatypes.h"
+
+#define I2C_SLAVE_ADDRESS 24
+#define I2C_SLAVE_MASK    127
+
 
 // Prototypes from main module
 uint8_t i2c_read(uint8_t);
@@ -51,10 +55,10 @@ void I2C_Initialize(void)
     SSPCON1 = 0x26;
     // ACKSTAT received; RCEN disabled; RSEN disabled; ACKEN disabled; SEN disabled; ACKDT acknowledge; GCEN disabled; PEN disabled; 
     SSPCON2 = 0x00;
-    // MSK0 127;
-    SSPMSK = (0x7F << 1);  // adjust UI mask for R/nW bit
+    // MSK0 127; 
+    SSPMSK = (I2C_SLAVE_MASK << 1);  // adjust UI mask for R/nW bit            
     // SSPADD 24; 
-    SSPADD = (0x18 << 1);  // adjust UI address for R/nW bit
+    SSPADD = (I2C_SLAVE_ADDRESS << 1);  // adjust UI address for R/nW bit
 
     // clear the slave interrupt flag
     PIR1bits.SSPIF = 0;
@@ -72,7 +76,7 @@ void I2C_ISR ( void )
     //       any address match.
 
     PIR1bits.SSPIF = 0;        // clear the slave interrupt flag
-    i2c_data    = SSPBUF;      // read SSPBUF to clear BF
+    i2c_data        = SSPBUF;  // read SSPBUF to clear BF
     if(1 == SSPSTATbits.R_nW)
     {
         if((1 == SSPSTATbits.D_nA) && (1 == PORTCbits.RC4))
@@ -145,7 +149,7 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
         case I2C_SLAVE_READ_REQUEST:
             // Process the data read request in the main module
             SSPBUF = i2c_read(dataAddress++);
-            if (dataAddress >= DATA_ADDR_END) dataAddress = 0;
+            if (dataAddress >= 255) dataAddress = 0;
             break;
 
         case I2C_SLAVE_READ_COMPLETED:

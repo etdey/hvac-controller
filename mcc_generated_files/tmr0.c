@@ -13,16 +13,16 @@
   @Description
     This source file provides APIs for TMR0.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.0.1
+        Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F25K20
         Driver Version    :  2.00
     The generated drivers are tested against the following:
-        Compiler          :  XC8 v1.31
-        MPLAB             :  MPLAB X 2.10
+        Compiler          :  XC8 v1.34
+        MPLAB             :  MPLAB X v2.35 or v3.00
 */
 
 /*
-Copyright (c) 2013 - 2014 released Microchip Technology Inc.  All rights reserved.
+Copyright (c) 2013 - 2015 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -107,7 +107,7 @@ uint16_t TMR0_Read16bitTimer(void)
 
     readValLow  = TMR0L;
     readValHigh = TMR0H;
-    readVal  = (readValHigh << 8) + readValLow;
+    readVal  = ((uint16_t)readValHigh << 8) + readValLow;
 
     return readVal;
 }
@@ -131,14 +131,15 @@ void TMR0_Reload16bit(void)
 void timerInterruptCallback(void);
 void TMR0_ISR(void)
 {
-    static volatile unsigned int CountCallBack = 0;
+    static volatile uint16_t CountCallBack = 0;
 
     // clear the TMR0 interrupt flag
     INTCONbits.TMR0IF = 0;
 
     // reload TMR0
-    TMR0H+ = timer0ReloadVal16bit >> 8;
-    TMR0L+ = (uint8_t) timer0ReloadVal16bit;
+    // Write to the Timer0 register
+    TMR0H = timer0ReloadVal16bit >> 8;
+    TMR0L = (uint8_t) timer0ReloadVal16bit;
 
     // callback function - called every 20th pass
     if (++CountCallBack >= TMR0_INTERRUPT_TICKER_FACTOR)

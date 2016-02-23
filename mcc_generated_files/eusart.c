@@ -13,16 +13,16 @@
   @Description
     This header file provides implementations for driver APIs for EUSART.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.0.1
+        Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F25K20
         Driver Version    :  2.00
     The generated drivers are tested against the following:
-        Compiler          :  XC8 v1.31
-        MPLAB             :  MPLAB X 2.10
+        Compiler          :  XC8 v1.34
+        MPLAB             :  MPLAB X v2.35 or v3.00
 */
 
 /*
-Copyright (c) 2013 - 2014 released Microchip Technology Inc.  All rights reserved.
+Copyright (c) 2013 - 2015 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -48,7 +48,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
   Section: Included Files
 */
 #include "eusart.h"
-#include "../pinfunctions.h"
 
 /**
   Section: Macro Declarations
@@ -96,12 +95,6 @@ void EUSART_Initialize(void)
 
     // Baud Rate = 9600; SPBRGH 3; 
     SPBRGH = 0x03;
-
-    // TXREG 0; 
-    TXREG = 0x00;
-
-    // RCREG 0; 
-    RCREG = 0x00;
 
 
     // initializing the driver state
@@ -173,9 +166,6 @@ void EUSART_Transmit_ISR(void)
             eusartTxTail = 0;
         }
         eusartTxBufferRemaining++;
-
-        // Turn on status light to indicate activity
-        CIRCUIT_STATUS = 1;
     }
     else
     {
@@ -200,9 +190,6 @@ void EUSART_Receive_ISR(void)
         eusartRxHead = 0;
     }
     eusartRxCount++;
-
-    // Turn on status light to indicate activity
-    CIRCUIT_STATUS = 1;
 }
 /**
   End of File
