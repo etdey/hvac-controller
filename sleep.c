@@ -1,58 +1,87 @@
 //
 // main.c
 //
-// Copyright (C) 2014 by Eric Dey. All rights reserved.
+// Copyright (C) 2016 by Eric Dey. All rights reserved.
 //
-
 #include "sleep.h"
 
 
-// This implements a delay function using the built-in plib functions. It
-// is more flexible because it takes a long int for its input.
+// This implements a millisecond delay function that takes an unsigned long
+// input. This function is designed to be good enough for general purposes
+// that include human-perception scales. It is not designed for high accuracy.
+// When the remaining time is less than 0.125ms the delay can be ended early.
 void delay_ms(unsigned long ms) {
-    unsigned long cycles;
-    unsigned char n;
+    unsigned long cycles;   // total count of remaining cycles to wait
+    unsigned long cutoff;   // cutoff limit below which no more delay is done
 
     cycles = (ms)*(_XTAL_FREQ/4000);
-
-    // Handle 10,000's of cycles
-    while (cycles >= 10000) {
-        if (cycles >= 2550000) {
-            Delay10KTCYx(255);
-            cycles -= 2550000;
-        } else {
-            n = cycles / 10000;
-            cycles -= ((unsigned long)n * 10000);
-            Delay10KTCYx(n);
-        }
+    cutoff = (_XTAL_FREQ/4000) / 8;    // 0.125ms lower limit
+    
+    // Handle 10,000's of cycles  -- avoid calling _delay(n) with n > 10,000
+    while (cycles >= 20000) {
+        cycles -= 20000;
+        _delay(10000);
+        _delay(10000);
     }
+    if (cycles >= 10000) {
+        cycles -= 10000;
+        _delay(10000);
+    }
+
+    if (cycles <= cutoff) return;  // Exit as soon as we drop below the cutoff
 
     // Handle 1000's of cycles
-    n = cycles / 1000;
-    if (n > 0) {
-        cycles -= ((unsigned long)n * 1000);
-        Delay1KTCYx(n);
+    while (cycles >= 2000) {
+        cycles -= 2000;
+        _delay(2000);
     }
+    if (cycles >= 1000) {
+        cycles -= 1000;
+        _delay(1000);
+    }
+
+    if (cycles <= cutoff) return;  // Exit as soon as we drop below the cutoff
 
     // Handle 100's of cycles
-    n = cycles / 100;
-    if (n > 0) {
-        cycles -= ((unsigned long)n * 100);
-        Delay100TCYx(n);
+    while (cycles >= 200) {
+        cycles -= 200;
+        _delay(200);
     }
+    if (cycles >= 100) {
+        cycles -= 100;
+        _delay(100);
+    }
+
+    if (cycles <= cutoff) return;  // Exit as soon as we drop below the cutoff
 
     // Handle 10's of cycles
-    n = cycles / 10;
-    if (n > 0) {
-        cycles -= ((unsigned long)n * 10);
-        Delay10TCYx(n);
+    while (cycles >= 20) {
+        cycles -= 20;
+        _delay(20);
+    }
+    if (cycles >= 10) {
+        cycles -= 10;
+        _delay(10);
     }
 
-    // Handle remaining cycles
-    n = cycles;
-    if (n > 0) {
-        Delay1TCYx(n);
+    if (cycles <= cutoff) return;  // Exit as soon as we drop below the cutoff
+
+    // At this point, there are less than 10 cycles remaining and, unless
+    // the oscillator is really slow, execution will already have been ended.
+    // This is code is followed through to the end mostly out of a need for
+    // completion.
+
+    // Handle remaining cycles of 3
+    while (cycles >= 2) {
+        cycles -= 3;
+        _delay3(1);
     }
+    
+    if (cycles == 0) return;
+
+    // Handle last 1 or 2 cycles -- accuracy is highly questionable by now
+    _delay(1);
+    if (cycles == 2) _delay(1);
 }
 
 
